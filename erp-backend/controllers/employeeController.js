@@ -12,7 +12,13 @@ export const getEmployees = async (req, res) => {
 
 // Add new employee
 export const addEmployee = async (req, res) => {
-    const { emp_code, name, role, contact, email, address, joining_date } = req.body;
+  let { emp_code, name, role, contact, email, address, joining_date } = req.body;
+  // Convert empty strings to null for optional fields
+  role = role === '' ? null : role;
+  contact = contact === '' ? null : contact;
+  email = email === '' ? null : email;
+  address = address === '' ? null : address;
+  joining_date = joining_date === '' ? null : joining_date;
     try {
         // First check if employee code already exists
         const existingEmployee = await pool.query(
