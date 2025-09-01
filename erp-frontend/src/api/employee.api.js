@@ -126,14 +126,67 @@ export const deleteEmployee = async (empCode) => {
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete employee: ${response.statusText}`);
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_) {
+      // ignore JSON parse error
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      const msg = data?.message || data?.error || `Failed to delete employee: ${response.status} ${response.statusText}`;
+      const err = new Error(msg);
+      err.status = response.status;
+      err.payload = data;
+      throw err;
+    }
     return data;
   } catch (error) {
-    console.error("Error deleting employee:", error);
+  // Avoid noisy logs for expected conflict errors
+  if (error?.status !== 409) {
+      console.error("Error deleting employee:", error);
+    }
     throw error;
+  }
+};
+
+// Force delete employee (also removes related shiftmapping & ot_approvals)
+export const deleteEmployeeForce = async (empCode) => {
+  try {
+    const response = await fetch(`${API_URL}/${empCode}?force=true`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+    let data = null;
+    try { data = await response.json(); } catch (_) {}
+    if (!response.ok) {
+      const msg = data?.message || `Failed to hard-delete employee: ${response.status} ${response.statusText}`;
+      const err = new Error(msg);
+      err.status = response.status;
+      err.payload = data;
+      throw err;
+    }
+    return data;
+  } catch (error) {
+  console.error("Error hard-deleting employee:", error);
+    throw error;
+  }
+};
+
+// Get dependency counts for an employee
+export const getEmployeeDependencies = async (empCode) => {
+  try {
+    const response = await fetch(`${API_URL}/${empCode}/dependencies`, { method: 'GET' });
+    const data = await response.json();
+    if (!response.ok) {
+      const err = new Error(data?.message || `Failed to get dependencies for ${empCode}`);
+      err.status = response.status;
+      err.payload = data;
+      throw err;
+    }
+    return data?.data || { shiftSchedules: 0, otApprovals: 0 };
+  } catch (error) {
+    // Non-fatal; return zeros to keep UX flowing
+    return { shiftSchedules: 0, otApprovals: 0 };
   }
 };

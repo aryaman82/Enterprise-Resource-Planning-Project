@@ -7,6 +7,7 @@ export const sampleAttendanceData = [
     clockOut: '07:00 PM',
     overtime: '2h 12m',
     status: 'Present',
+  shift: 'Shift A',
     notes: 'Discussed mutual value proposition...',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bagus'
   },
@@ -17,6 +18,7 @@ export const sampleAttendanceData = [
     clockOut: '07:12 PM',
     overtime: '-',
     status: 'Present',
+  shift: 'Shift A',
     notes: 'Tynisha is already lined up for th...',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ihdzain'
   },
@@ -27,6 +29,7 @@ export const sampleAttendanceData = [
     clockOut: '05:00 PM',
     overtime: '-',
     status: 'Left for the day',
+  shift: 'Shift B',
     notes: 'Marci is already doing some gre...',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mufli'
   },
@@ -37,6 +40,7 @@ export const sampleAttendanceData = [
     clockOut: '05:01 PM',
     overtime: '-',
     status: 'Absent',
+  shift: 'Shift C',
     notes: 'Tynisha is already lined up for th...',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Fauzan'
   },
@@ -47,6 +51,7 @@ export const sampleAttendanceData = [
     clockOut: '07:00 PM',
     overtime: '1h 05m',
     status: 'Present',
+  shift: 'Shift B',
     notes: 'Discussed mutual value proposi...',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Raihan'
   }
@@ -62,14 +67,31 @@ export const calculateAttendanceSummary = (attendanceData) => {
   };
 };
 
-export const filterAttendanceData = (data, searchTerm, statusFilter) => {
+export const filterAttendanceData = (data, searchTerm = '', statusFilter = 'All', shiftFilter = 'All') => {
   return data.filter(employee => {
     const matchesSearch = employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          employee.id.includes(searchTerm) ||
                          employee.notes.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'All' || employee.status === statusFilter;
+    const matchesShift = shiftFilter === 'All' || employee.shift === shiftFilter;
     
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesShift;
   });
 };
+
+// Flagged employees sample
+export const flaggedAttendanceData = [
+  {
+    id: '39488846',
+    name: 'Bagus Fikri',
+    reason: 'Late clock-in',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bagus'
+  },
+  {
+    id: '39488844',
+    name: 'Fauzan Ardiansyah',
+    reason: 'Forgot to clock-out',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Fauzan'
+  }
+];

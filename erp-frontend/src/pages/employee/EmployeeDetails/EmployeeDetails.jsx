@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Download, Plus, Edit, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Download, Plus, Edit, Trash2, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AddEmployeeModal from './AddEmployeeModal';
-import { fetchEmployees, getEmployee, deleteEmployee } from '../../../api/employee.api'; // ✅ Import API
+import { fetchEmployees, getEmployee, deleteEmployee, deleteEmployeeForce, addEmployee, getEmployeeDependencies } from '../../../api/employee.api'; // ✅ Import API
+import Papa from 'papaparse';
 
 const EmployeeDetails = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,6 +13,7 @@ const EmployeeDetails = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
   // Load employees from backend on mount
   useEffect(() => {
@@ -54,18 +56,13 @@ const EmployeeDetails = () => {
 
     // Show confirmation toast
     toast((t) => (
-      <div className="flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <span className="font-medium text-gray-900">Delete Employee</span>
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ×
-          </button>
+      <div className="flex flex-col text-gray-900" style={{ maxWidth: 420 }}>
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-sm font-semibold">Delete Employee</h4>
+          <button aria-label="Close" onClick={() => toast.dismiss(t.id)} className="text-gray-400 hover:text-gray-600">×</button>
         </div>
-        <p className="text-sm text-gray-600 mb-4">
-          Are you sure you want to delete <strong>{employeeName}</strong>? This action cannot be undone.
+        <p className="text-[13px] text-gray-700 mb-4">
+          Are you sure you want to delete <span className="font-medium">{employeeName}</span>? This action cannot be undone.
         </p>
         <div className="flex space-x-2">
           <button
@@ -79,42 +76,71 @@ const EmployeeDetails = () => {
           </button>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-sm hover:bg-gray-400 transition-colors"
+            className="px-3 py-1 bg-gray-100 text-gray-800 rounded text-sm hover:bg-gray-200 transition-colors"
           >
             Cancel
           </button>
         </div>
       </div>
     ), {
-      duration: Infinity, // Keep toast open until user decides
-      style: {
-        background: '#fff',
-        color: '#000',
-        border: '1px solid #e5e7eb',
-        maxWidth: '400px',
-      },
+      duration: Infinity,
+      style: { background: '#ffffff', color: '#111827', border: '1px solid #e5e7eb', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' },
     });
   };
 
   // Confirm and execute delete
   const confirmDelete = async (employeeId, employeeName) => {
     try {
-      // Show loading toast
+      // First, check dependencies to avoid generating a 409 and duplicate messages
+      const deps = await getEmployeeDependencies(employeeId);
+      const hasDeps = (deps?.shiftSchedules || 0) > 0 || (deps?.otApprovals || 0) > 0;
+
+      if (hasDeps) {
+        // Show hard-delete confirmation directly
+        toast((t) => (
+          <div className="flex flex-col text-gray-900" style={{ maxWidth: 440 }}>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-sm font-semibold">Delete Blocked</h4>
+              <button aria-label="Close" onClick={() => toast.dismiss(t.id)} className="text-gray-400 hover:text-gray-600">×</button>
+            </div>
+            <p className="text-[13px] text-gray-700 mb-1">This employee has linked records and cannot be deleted directly.</p>
+            <p className="text-[12px] text-gray-500 mb-2">Shift schedules: {deps.shiftSchedules}, OT approvals: {deps.otApprovals}</p>
+            <p className="text-[12px] text-red-700 mb-4">Hard delete will also remove these related records for <span className="font-medium">{employeeName}</span>. This cannot be undone.</p>
+            <div className="flex space-x-2">
+              <button
+                onClick={async () => {
+                  toast.dismiss(t.id);
+                  const loadingToast = toast.loading('Hard deleting employee...');
+                  try {
+                    await deleteEmployeeForce(employeeId);
+                    toast.dismiss(loadingToast);
+                    toast.success(`${employeeName} was hard-deleted`, { icon: '⚠️' });
+                    await loadEmployees();
+                  } catch (e) {
+                    toast.dismiss(loadingToast);
+                    toast.error(e?.message || 'Hard delete failed');
+                  }
+                }}
+                className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+              >
+                Hard Delete
+              </button>
+              <button onClick={() => toast.dismiss(t.id)} className="px-3 py-1 bg-gray-100 text-gray-800 rounded text-sm hover:bg-gray-200">Cancel</button>
+            </div>
+          </div>
+        ), { duration: Infinity, style: { background: '#ffffff', color: '#111827', border: '1px solid #e5e7eb', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' } });
+        return;
+      }
+
+      // No dependencies: proceed with normal delete
       const loadingToast = toast.loading('Deleting employee...');
-
       await deleteEmployee(employeeId);
-
-      // Dismiss loading toast and show success
       toast.dismiss(loadingToast);
-      toast.success(`${employeeName} has been deleted successfully`, {
-        icon: '🗑️',
-      });
-
-      // Refresh employee list
+      toast.success(`${employeeName} has been deleted successfully`, { icon: '🗑️' });
       await loadEmployees();
     } catch (error) {
-      console.error('Error deleting employee:', error);
-      toast.error('Failed to delete employee. Please try again.');
+      const msg = error?.payload?.message || error?.message || 'Failed to delete employee. Please try again.';
+      toast.error(msg);
     }
   };
 
@@ -122,6 +148,128 @@ const EmployeeDetails = () => {
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setEditingEmployee(null);
+  };
+
+  // Download CSV template
+  const handleDownloadTemplate = () => {
+    const headers = [
+      'emp_code',
+      'name',
+      'role',
+      'email',
+      'contact',
+      'joining_date',
+      'address',
+    ];
+    const csvContent = headers.join(',') + '\n';
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'employees_template.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Trigger file picker
+  const handleImportClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  // Normalize keys of a parsed row
+  const normalizeRow = (row) => {
+    const out = {};
+    Object.keys(row || {}).forEach((k) => {
+      const key = (k || '').trim().toLowerCase();
+      out[key] = typeof row[k] === 'string' ? row[k].trim() : row[k];
+    });
+    return out;
+  };
+
+  // Validate and shape a row into employee payload
+  const shapeEmployee = (row) => {
+    const r = normalizeRow(row);
+    const emp = {
+      emp_code: r.emp_code || '',
+      name: r.name || '',
+      role: r.role || '',
+      email: r.email || '',
+      contact: r.contact || '',
+      joining_date: r.joining_date || '',
+      address: r.address || '',
+    };
+
+    // joining_date must be YYYY-MM-DD or empty
+    if (emp.joining_date) {
+      const iso = /^\d{4}-\d{2}-\d{2}$/;
+      if (!iso.test(emp.joining_date)) {
+        throw new Error(`Invalid joining_date '${emp.joining_date}'. Use YYYY-MM-DD.`);
+      }
+    }
+
+    // Required fields
+    if (!emp.emp_code || !emp.name) {
+      throw new Error('Missing required fields (emp_code, name)');
+    }
+
+    return emp;
+  };
+
+  // Handle file selection and import
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    // reset file input so selecting the same file again still triggers change
+    e.target.value = '';
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const rows = Array.isArray(results.data) ? results.data : [];
+        if (rows.length === 0) {
+          toast('No rows found in file. Ensure the header row exists.', { icon: 'ℹ️' });
+          return;
+        }
+
+        const importToast = toast.loading('Validating and importing employees...');
+
+        let success = 0;
+        let failed = 0;
+        const errors = [];
+
+        // Validate and import sequentially to avoid overloading the API
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          try {
+            const emp = shapeEmployee(row);
+            await addEmployee(emp);
+            success += 1;
+          } catch (err) {
+            failed += 1;
+            const msg = err?.message || 'Unknown error';
+            errors.push(`Row ${i + 2}: ${msg}`); // +2 to account for header row (1) and zero-index
+          }
+        }
+
+        toast.dismiss(importToast);
+        if (success > 0) {
+          toast.success(`Imported ${success} employee${success !== 1 ? 's' : ''}${failed ? `, ${failed} failed` : ''}.`);
+          // Refresh table
+          await loadEmployees();
+        }
+        if (failed > 0) {
+          // Show a compact error toast; for long details, log to console
+          const first = errors.slice(0, 5).join('\n');
+          toast.error(`Some rows failed. Top issues:\n${first}${errors.length > 5 ? `\n...and ${errors.length - 5} more` : ''}`);
+          // Also log full list for debugging
+          console.error('Import errors:', errors);
+        }
+      },
+      error: (err) => {
+        toast.error(`Failed to parse file: ${err.message || err}`);
+      },
+    });
   };
 
   // Filter employees based on search term
@@ -182,6 +330,21 @@ const EmployeeDetails = () => {
 
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                {/* Import */}
+                <button
+                  onClick={handleImportClick}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import
+                </button>
+                <button
+                  onClick={handleDownloadTemplate}
+                  className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md text-gray-600 hover:bg-gray-50"
+                  title="Download CSV template"
+                >
+                  Template
+                </button>
                 <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50">
                   <Download className="h-4 w-4 mr-2" />
                   Export
@@ -193,6 +356,14 @@ const EmployeeDetails = () => {
                   <Plus className="h-4 w-4 mr-2" />
                   New Employee
                 </button>
+                {/* Hidden file input for CSV */}
+                <input
+                  type="file"
+                  accept=".csv,text/csv"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
               </div>
             </div>
           </div>

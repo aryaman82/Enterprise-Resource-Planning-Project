@@ -6,12 +6,12 @@ const AttendanceFilters = ({
   setSearchTerm, 
   selectedDate, 
   setSelectedDate, 
-  statusFilter, 
-  setStatusFilter, 
+  shiftFilter,
+  setShiftFilter,
   loading, 
   handleRefresh 
 }) => {
-  const statusOptions = ['All', 'Present', 'Absent', 'Left for the day'];
+  const shiftOptions = ['All', 'Shift A', 'Shift B', 'Shift C'];
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -47,18 +47,18 @@ const AttendanceFilters = ({
             />
           </div>
 
-          {/* Status Filter */}
+          {/* Shift Filter */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Filter className="h-5 w-5 text-gray-400" />
             </div>
             <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              value={shiftFilter}
+              onChange={(e) => setShiftFilter(e.target.value)}
               className="pl-10 pr-8 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             >
-              {statusOptions.map(status => (
-                <option key={status} value={status}>{status}</option>
+              {shiftOptions.map(shift => (
+                <option key={shift} value={shift}>{shift}</option>
               ))}
             </select>
           </div>

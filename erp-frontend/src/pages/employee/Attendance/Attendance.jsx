@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import AttendanceSummaryCards from './components/AttendanceSummaryCards';
 import AttendanceFilters from './components/AttendanceFilters';
 import AttendanceTable from './components/AttendanceTable';
-import { sampleAttendanceData, calculateAttendanceSummary, filterAttendanceData } from './data/attendanceData';
+import FlaggedEmployeesTable from './components/FlaggedEmployeesTable';
+import { sampleAttendanceData, flaggedAttendanceData, filterAttendanceData } from './data/attendanceData';
 
 const Attendance = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    const [statusFilter, setStatusFilter] = useState('All');
+    const [shiftFilter, setShiftFilter] = useState('All');
     const [loading, setLoading] = useState(false);
 
-    // Filter attendance data
-    const filteredAttendanceData = filterAttendanceData(sampleAttendanceData, searchTerm, statusFilter);
-
-    // Calculate attendance summary
-    const attendanceSummary = calculateAttendanceSummary(sampleAttendanceData);
+    // Filter attendance data (by search + shift)
+    const filteredAttendanceData = filterAttendanceData(sampleAttendanceData, searchTerm, undefined, shiftFilter);
 
     const handleRefresh = () => {
         setLoading(true);
@@ -32,14 +29,14 @@ const Attendance = () => {
                 setSearchTerm={setSearchTerm}
                 selectedDate={selectedDate}
                 setSelectedDate={setSelectedDate}
-                statusFilter={statusFilter}
-                setStatusFilter={setStatusFilter}
+                shiftFilter={shiftFilter}
+                setShiftFilter={setShiftFilter}
                 loading={loading}
                 handleRefresh={handleRefresh}
             />
 
-            {/* Attendance Summary Cards */}
-            <AttendanceSummaryCards attendanceSummary={attendanceSummary} />
+            {/* Flagged Employees */}
+            <FlaggedEmployeesTable data={flaggedAttendanceData} />
 
 
             {/* Employee Attendance List */}
