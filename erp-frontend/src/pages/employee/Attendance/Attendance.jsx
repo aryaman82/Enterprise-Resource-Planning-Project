@@ -20,6 +20,7 @@ const Attendance = () => {
             const res = await fetch('http://localhost:5000/api/punch-sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ forceBackfillDays: 7 }),
             });
             const data = await res.json();
             if (!res.ok || !data.success) {

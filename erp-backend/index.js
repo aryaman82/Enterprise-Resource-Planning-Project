@@ -34,7 +34,8 @@ app.post("/api/punch-sync", async (req, res) => {
     isSyncRunning = true;
     try {
         const syncMod = (await import(pathToFileURL(syncPath).href)).default;
-        const result = await syncMod.syncPunchData();
+    const days = Number(req.body?.forceBackfillDays || 0);
+    const result = await syncMod.syncPunchData(days > 0 ? { forceBackfillDays: days } : {});
         res.json({ success: true, ...result });
     } catch (e) {
         console.error("Manual punch sync failed:", e.message);
