@@ -14,6 +14,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const syncPath = path.join(__dirname, "punch-sync-service", "src", "services", "syncService.js");
+const schedPath = path.join(__dirname, "punch-sync-service", "src", "scheduler", "scheduler.js");
 
 // Middlewares
 app.use(cors({
@@ -22,6 +26,23 @@ app.use(cors({
     allowedHeaders: ["Content-Type"]
 }));
 app.use(express.json());
+
+// Manual trigger endpoint with in-process lock
+let isSyncRunning = false;
+app.post("/api/punch-sync", async (req, res) => {
+    if (isSyncRunning) return res.status(409).json({ success: false, error: "Sync already in progress" });
+    isSyncRunning = true;
+    try {
+        const syncMod = (await import(pathToFileURL(syncPath).href)).default;
+        const result = await syncMod.syncPunchData();
+        res.json({ success: true, ...result });
+    } catch (e) {
+        console.error("Manual punch sync failed:", e.message);
+        res.status(500).json({ success: false, error: e.message });
+    } finally {
+        isSyncRunning = false;
+    }
+});
 
 // Test DB connection route
 app.get("/api/test-db", async (req, res) => {
@@ -68,10 +89,6 @@ app.listen(PORT, async () => {
 
     // Start punch sync service (immediate + scheduler)
     try {
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-    const syncPath = path.join(__dirname, "punch-sync-service", "src", "services", "syncService.js");
-    const schedPath = path.join(__dirname, "punch-sync-service", "src", "scheduler", "scheduler.js");
     const syncApp = (await import(pathToFileURL(syncPath).href)).default;
     const schedulerMod = (await import(pathToFileURL(schedPath).href)).default;
     // Immediate sync

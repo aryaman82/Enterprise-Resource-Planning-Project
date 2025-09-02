@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import AttendanceFilters from './components/AttendanceFilters';
 import AttendanceTable from './components/AttendanceTable';
 import FlaggedEmployeesTable from './components/FlaggedEmployeesTable';
@@ -13,12 +14,33 @@ const Attendance = () => {
     // Filter attendance data (by search + shift)
     const filteredAttendanceData = filterAttendanceData(sampleAttendanceData, searchTerm, undefined, shiftFilter);
 
-    const handleRefresh = () => {
+    const handleRefresh = async () => {
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            const res = await fetch('http://localhost:5000/api/punch-sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || 'Sync failed');
+            }
+            const { fetched = 0, inserted = 0, skipped = 0 } = data;
+            toast.success(
+                (
+                    <div className="text-sm">
+                        <div className="font-semibold text-gray-900">Sync Complete</div>
+                        <div className="mt-1 text-gray-700">Inserted Rows: <span className="font-medium">{inserted}</span></div>
+                        <div className="text-gray-700">Skipped: <span className="font-medium">{skipped}</span></div>
+                        <div className="text-gray-700">Fetched: <span className="font-medium">{fetched}</span></div>
+                    </div>
+                )
+            );
+        } catch (err) {
+            toast.error(`Sync failed: ${err.message}`);
+        } finally {
             setLoading(false);
-        }, 1000);
+        }
     };
 
     return (
