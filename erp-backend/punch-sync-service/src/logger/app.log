@@ -1,0 +1,252 @@
+2025-09-02T12:01:45.636Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:01:46.210Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:02:38.654Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:02:39.196Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:05:00.537Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:05:00.538Z - INFO  Scheduled sync OK. Inserted=0, Skipped=0
+2025-09-02T12:09:07.759Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:09:08.477Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:09:24.705Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:09:25.261Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:10:00.421Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:10:00.423Z - INFO  Scheduled sync OK. Inserted=0, Skipped=0
+2025-09-02T12:10:15.373Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:10:15.866Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:13:07.717Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:13:07.765Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:43 auth=basic
+2025-09-02T12:13:08.501Z - INFO  API responded status=200 count=0
+2025-09-02T12:13:08.503Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:13:15.966Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:13:16.011Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:43
+2025-09-02T12:13:16.012Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:43 auth=basic
+2025-09-02T12:13:16.671Z - INFO  API responded status=200 count=0
+2025-09-02T12:13:16.673Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:13:22.311Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:13:22.356Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:43
+2025-09-02T12:13:22.357Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:43 auth=basic
+2025-09-02T12:13:22.938Z - INFO  API responded status=200 count=0
+2025-09-02T12:13:22.940Z - STATS fetched=0 inserted=0 skipped=0
+2025-09-02T12:13:52.823Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:13:52.872Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:43
+2025-09-02T12:13:52.872Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:43 auth=raw-header
+2025-09-02T12:13:53.455Z - ERROR Sync failed: Error fetching punch data: Request failed with status code 500
+2025-09-02T12:13:58.486Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:13:58.523Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:43
+2025-09-02T12:13:58.524Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:43 auth=raw-header
+2025-09-02T12:13:58.854Z - ERROR Sync failed: Error fetching punch data: Request failed with status code 500
+2025-09-02T12:16:24.118Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:16:24.280Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:46
+2025-09-02T12:16:24.281Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:46 auth=raw-header
+2025-09-02T12:16:24.662Z - ERROR Sync failed: Error fetching punch data: Request failed with status code 500
+2025-09-02T12:16:32.930Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:16:33.094Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:46
+2025-09-02T12:16:33.095Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:46 auth=raw-header
+2025-09-02T12:16:33.471Z - ERROR Sync failed: Error fetching punch data: Request failed with status code 500
+2025-09-02T12:19:10.261Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:19:10.306Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:49
+2025-09-02T12:19:10.307Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:49 auth=raw-header
+2025-09-02T12:19:10.677Z - ERROR Sync failed: Error fetching punch data: Request failed with status code 500
+2025-09-02T12:19:20.090Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:19:20.134Z - INFO  Sync window IST From=29/08/2025_19:58 To=02/09/2025_17:49
+2025-09-02T12:19:20.135Z - INFO  Fetching punches: Empcode=ALL FromDate=29/08/2025_19:58 ToDate=02/09/2025_17:49 auth=basic
+2025-09-02T12:19:20.770Z - INFO  API responded status=200 count=331
+2025-09-02T12:19:21.008Z - STATS fetched=331 inserted=323 skipped=8
+2025-09-02T12:19:29.452Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:19:29.602Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:49
+2025-09-02T12:19:29.603Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:49 auth=basic
+2025-09-02T12:19:29.982Z - INFO  API responded status=200 count=1
+2025-09-02T12:19:29.985Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:19:42.106Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:19:42.150Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:49
+2025-09-02T12:19:42.151Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:49 auth=basic
+2025-09-02T12:19:42.508Z - INFO  API responded status=200 count=1
+2025-09-02T12:19:42.512Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:20:00.070Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:50
+2025-09-02T12:20:00.070Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:50 auth=basic
+2025-09-02T12:20:00.359Z - INFO  API responded status=200 count=1
+2025-09-02T12:20:00.362Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:20:00.362Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:21:25.893Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:21:25.934Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:51
+2025-09-02T12:21:25.935Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:51 auth=basic
+2025-09-02T12:21:26.401Z - INFO  API responded status=200 count=1
+2025-09-02T12:21:26.405Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:23:29.589Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:23:29.591Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:23:29.642Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:53
+2025-09-02T12:23:29.643Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:53 auth=basic
+2025-09-02T12:23:29.748Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:53
+2025-09-02T12:23:29.749Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:53 auth=basic
+2025-09-02T12:23:30.055Z - INFO  API responded status=200 count=1
+2025-09-02T12:23:30.059Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:23:30.104Z - INFO  API responded status=200 count=1
+2025-09-02T12:23:30.110Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:25:00.070Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:55
+2025-09-02T12:25:00.070Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:55
+2025-09-02T12:25:00.070Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:55 auth=basic
+2025-09-02T12:25:00.071Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:55 auth=basic
+2025-09-02T12:25:00.369Z - INFO  API responded status=200 count=1
+2025-09-02T12:25:00.369Z - INFO  API responded status=200 count=1
+2025-09-02T12:25:00.371Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:25:00.371Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:25:00.372Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:25:00.372Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:26:30.768Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T12:26:30.815Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_17:56
+2025-09-02T12:26:30.816Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_17:56 auth=basic
+2025-09-02T12:26:31.247Z - INFO  API responded status=200 count=1
+2025-09-02T12:26:31.252Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:30:00.066Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:00
+2025-09-02T12:30:00.066Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:00
+2025-09-02T12:30:00.067Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:00 auth=basic
+2025-09-02T12:30:00.067Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:00 auth=basic
+2025-09-02T12:30:00.364Z - INFO  API responded status=200 count=1
+2025-09-02T12:30:00.367Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:30:00.367Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:30:00.393Z - INFO  API responded status=200 count=1
+2025-09-02T12:30:00.396Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:30:00.397Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:35:00.190Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:05
+2025-09-02T12:35:00.190Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:05
+2025-09-02T12:35:00.191Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:05 auth=basic
+2025-09-02T12:35:00.191Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:05 auth=basic
+2025-09-02T12:35:00.515Z - INFO  API responded status=200 count=1
+2025-09-02T12:35:00.518Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:35:00.519Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:35:00.562Z - INFO  API responded status=200 count=1
+2025-09-02T12:35:00.565Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:35:00.565Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:40:00.067Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:10
+2025-09-02T12:40:00.068Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:10 auth=basic
+2025-09-02T12:40:00.069Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:10
+2025-09-02T12:40:00.070Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:10 auth=basic
+2025-09-02T12:40:00.349Z - INFO  API responded status=200 count=1
+2025-09-02T12:40:00.352Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:40:00.352Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:40:00.381Z - INFO  API responded status=200 count=1
+2025-09-02T12:40:00.384Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:40:00.384Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:45:00.074Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:15
+2025-09-02T12:45:00.075Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:15 auth=basic
+2025-09-02T12:45:00.079Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:15
+2025-09-02T12:45:00.080Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:15 auth=basic
+2025-09-02T12:45:00.430Z - INFO  API responded status=200 count=1
+2025-09-02T12:45:00.433Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:45:00.434Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:45:00.482Z - INFO  API responded status=200 count=1
+2025-09-02T12:45:00.485Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:45:00.485Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:50:00.066Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:20
+2025-09-02T12:50:00.067Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:20 auth=basic
+2025-09-02T12:50:00.068Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:20
+2025-09-02T12:50:00.068Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:20 auth=basic
+2025-09-02T12:50:00.331Z - INFO  API responded status=200 count=1
+2025-09-02T12:50:00.334Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:50:00.334Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:50:00.378Z - INFO  API responded status=200 count=1
+2025-09-02T12:50:00.381Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:50:00.381Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:55:00.071Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:25
+2025-09-02T12:55:00.072Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:25 auth=basic
+2025-09-02T12:55:00.072Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:25
+2025-09-02T12:55:00.073Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:25 auth=basic
+2025-09-02T12:55:00.400Z - INFO  API responded status=200 count=1
+2025-09-02T12:55:00.402Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:55:00.402Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T12:55:00.431Z - INFO  API responded status=200 count=1
+2025-09-02T12:55:00.433Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T12:55:00.434Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:00:00.067Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:30
+2025-09-02T13:00:00.068Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:30
+2025-09-02T13:00:00.068Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:30 auth=basic
+2025-09-02T13:00:00.068Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:30 auth=basic
+2025-09-02T13:00:00.333Z - INFO  API responded status=200 count=1
+2025-09-02T13:00:00.336Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:00:00.336Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:00:00.382Z - INFO  API responded status=200 count=1
+2025-09-02T13:00:00.385Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:00:00.386Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:05:00.110Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:35
+2025-09-02T13:05:00.111Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:35 auth=basic
+2025-09-02T13:05:00.117Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:35
+2025-09-02T13:05:00.118Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:35 auth=basic
+2025-09-02T13:05:00.437Z - INFO  API responded status=200 count=1
+2025-09-02T13:05:00.441Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:05:00.442Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:05:00.485Z - INFO  API responded status=200 count=1
+2025-09-02T13:05:00.490Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:05:00.490Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:09:50.392Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T13:09:50.395Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T13:09:50.474Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:39
+2025-09-02T13:09:50.475Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:39 auth=basic
+2025-09-02T13:09:50.572Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:39
+2025-09-02T13:09:50.574Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:39 auth=basic
+2025-09-02T13:09:52.541Z - INFO  API responded status=200 count=1
+2025-09-02T13:09:52.547Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:09:53.425Z - INFO  API responded status=200 count=1
+2025-09-02T13:09:53.433Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:10:00.033Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:40
+2025-09-02T13:10:00.034Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:40 auth=basic
+2025-09-02T13:10:00.049Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:40
+2025-09-02T13:10:00.050Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:40 auth=basic
+2025-09-02T13:10:00.264Z - INFO  API responded status=200 count=1
+2025-09-02T13:10:00.267Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:10:00.268Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:10:00.279Z - INFO  API responded status=200 count=1
+2025-09-02T13:10:00.283Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:10:00.284Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:14:23.838Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:44
+2025-09-02T13:14:23.838Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:44 auth=basic
+2025-09-02T13:14:24.106Z - INFO  API responded status=200 count=1
+2025-09-02T13:14:24.108Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:15:00.061Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:45
+2025-09-02T13:15:00.061Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:45 auth=basic
+2025-09-02T13:15:00.062Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:45
+2025-09-02T13:15:00.062Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:45 auth=basic
+2025-09-02T13:15:00.401Z - INFO  API responded status=200 count=1
+2025-09-02T13:15:00.401Z - INFO  API responded status=200 count=1
+2025-09-02T13:15:00.403Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:15:00.403Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:15:00.405Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:15:00.405Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:15:10.829Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:45
+2025-09-02T13:15:10.830Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:45 auth=basic
+2025-09-02T13:15:11.077Z - INFO  API responded status=200 count=1
+2025-09-02T13:15:11.079Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:15:15.901Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:45
+2025-09-02T13:15:15.901Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:45 auth=basic
+2025-09-02T13:15:15.986Z - INFO  API responded status=200 count=1
+2025-09-02T13:15:15.993Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:15:22.529Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:45
+2025-09-02T13:15:22.530Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:45 auth=basic
+2025-09-02T13:15:22.783Z - INFO  API responded status=200 count=1
+2025-09-02T13:15:22.785Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:15:58.442Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T13:15:58.476Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:45
+2025-09-02T13:15:58.477Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:45 auth=basic
+2025-09-02T13:15:58.548Z - INFO  Scheduler initialized. Cron=*/5 * * * *
+2025-09-02T13:15:58.581Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:45
+2025-09-02T13:15:58.581Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:45 auth=basic
+2025-09-02T13:15:58.802Z - INFO  API responded status=200 count=1
+2025-09-02T13:15:58.805Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:15:58.893Z - INFO  API responded status=200 count=1
+2025-09-02T13:15:58.896Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:17:17.518Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:47
+2025-09-02T13:17:17.518Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:47 auth=basic
+2025-09-02T13:17:17.766Z - INFO  API responded status=200 count=1
+2025-09-02T13:17:17.768Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:17:21.506Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:47
+2025-09-02T13:17:21.506Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:47 auth=basic
+2025-09-02T13:17:21.593Z - INFO  API responded status=200 count=1
+2025-09-02T13:17:21.595Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:20:00.048Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:50
+2025-09-02T13:20:00.049Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:50 auth=basic
+2025-09-02T13:20:00.050Z - INFO  Sync window IST From=02/09/2025_17:25 To=02/09/2025_18:50
+2025-09-02T13:20:00.050Z - INFO  Fetching punches: Empcode=ALL FromDate=02/09/2025_17:25 ToDate=02/09/2025_18:50 auth=basic
+2025-09-02T13:20:00.416Z - INFO  API responded status=200 count=1
+2025-09-02T13:20:00.421Z - INFO  API responded status=200 count=1
+2025-09-02T13:20:00.422Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:20:00.423Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1
+2025-09-02T13:20:00.423Z - STATS fetched=1 inserted=0 skipped=1
+2025-09-02T13:20:00.423Z - INFO  Scheduled sync OK. Inserted=0, Skipped=1

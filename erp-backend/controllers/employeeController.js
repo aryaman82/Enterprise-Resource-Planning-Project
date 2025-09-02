@@ -12,7 +12,13 @@ export const getEmployees = async (req, res) => {
 
 // Add new employee
 export const addEmployee = async (req, res) => {
-    const { emp_code, name, role, contact, email, address, joining_date } = req.body;
+  let { emp_code, name, role, contact, email, address, joining_date } = req.body;
+  // Convert empty strings to null for optional fields
+  role = role === '' ? null : role;
+  contact = contact === '' ? null : contact;
+  email = email === '' ? null : email;
+  address = address === '' ? null : address;
+  joining_date = joining_date === '' ? null : joining_date;
     try {
         // First check if employee code already exists
         const existingEmployee = await pool.query(
@@ -144,6 +150,7 @@ export const updateEmployee = async (req, res) => {
 export const deleteEmployee = async (req, res) => {
   try {
     const { emp_code } = req.params;
+  const { force } = req.query;
     
     // Check if employee exists
     const checkResult = await pool.query('SELECT * FROM employees WHERE emp_code = $1', [emp_code]);
@@ -156,6 +163,59 @@ export const deleteEmployee = async (req, res) => {
     }
     
     const employeeToDelete = checkResult.rows[0];
+
+    // Pre-check for dependent records that block deletion (no cascade)
+    // attendance and punch_data are CASCADE, but shiftmapping and ot_approvals are NO ACTION
+    const [shiftCountRes, otCountRes] = await Promise.all([
+      pool.query('SELECT COUNT(*)::int AS count FROM shiftmapping WHERE emp_code = $1', [emp_code]),
+      pool.query('SELECT COUNT(*)::int AS count FROM ot_approvals WHERE emp_code = $1', [emp_code])
+    ]);
+
+    const shiftCount = shiftCountRes.rows[0]?.count || 0;
+    const otCount = otCountRes.rows[0]?.count || 0;
+
+    if ((shiftCount > 0 || otCount > 0) && (force === 'true' || force === '1')) {
+      // Perform hard delete in a transaction
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const delShift = await client.query('DELETE FROM shiftmapping WHERE emp_code = $1', [emp_code]);
+        const delOt = await client.query('DELETE FROM ot_approvals WHERE emp_code = $1', [emp_code]);
+        const delEmp = await client.query('DELETE FROM employees WHERE emp_code = $1', [emp_code]);
+        await client.query('COMMIT');
+
+        if (delEmp.rowCount === 0) {
+          return res.status(400).json({ success: false, message: 'Failed to delete employee' });
+        }
+
+        return res.json({
+          success: true,
+          message: `Employee '${employeeToDelete.name}' (${emp_code}) hard-deleted successfully`,
+          data: {
+            employee: employeeToDelete,
+            deleted: {
+              shiftSchedules: delShift.rowCount,
+              otApprovals: delOt.rowCount
+            }
+          }
+        });
+      } catch (txErr) {
+        await client.query('ROLLBACK');
+        console.error('Hard delete transaction failed:', txErr);
+        return res.status(500).json({ success: false, message: 'Hard delete failed', error: txErr.message });
+      } finally {
+        client.release();
+      }
+    }
+
+    if (shiftCount > 0 || otCount > 0) {
+      return res.status(409).json({
+        success: false,
+        error: 'FK_CONSTRAINT',
+        message: `Cannot delete employee '${employeeToDelete.name}' (${emp_code}) because related records exist. Shift schedules: ${shiftCount}, OT approvals: ${otCount}.`,
+        details: { shiftSchedules: shiftCount, otApprovals: otCount }
+      });
+    }
     
     // Delete employee
     const deleteResult = await pool.query('DELETE FROM employees WHERE emp_code = $1', [emp_code]);
@@ -174,10 +234,40 @@ export const deleteEmployee = async (req, res) => {
     });
   } catch (error) {
     console.error('Error deleting employee:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error',
-      error: error.message 
-    });
+    if (error.code === '23503') {
+      // Foreign key violation fallback
+      return res.status(409).json({
+        success: false,
+        error: 'FK_CONSTRAINT',
+        message: 'Cannot delete employee due to related records in other tables. Remove or reassign those records first.',
+        dbDetail: error.detail
+      });
+    }
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+  }
+};
+
+// Get dependency counts for an employee (shiftmapping, ot_approvals)
+export const getEmployeeDependencies = async (req, res) => {
+  try {
+    const { emp_code } = req.params;
+    // Ensure employee exists
+    const empRes = await pool.query('SELECT emp_code FROM employees WHERE emp_code = $1', [emp_code]);
+    if (empRes.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
+    }
+
+    const [shiftCountRes, otCountRes] = await Promise.all([
+      pool.query('SELECT COUNT(*)::int AS count FROM shiftmapping WHERE emp_code = $1', [emp_code]),
+      pool.query('SELECT COUNT(*)::int AS count FROM ot_approvals WHERE emp_code = $1', [emp_code])
+    ]);
+
+    const shiftSchedules = shiftCountRes.rows[0]?.count || 0;
+    const otApprovals = otCountRes.rows[0]?.count || 0;
+
+    return res.json({ success: true, data: { shiftSchedules, otApprovals } });
+  } catch (error) {
+    console.error('Error getting employee dependencies:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };

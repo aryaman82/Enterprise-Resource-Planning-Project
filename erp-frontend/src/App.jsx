@@ -31,28 +31,31 @@ function App() {
           containerClassName=""
           containerStyle={{}}
           toastOptions={{
-            // Define default options
             className: '',
             duration: 4000,
             style: {
-              background: '#363636',
-              color: '#fff',
-              borderRadius: '8px',
-              fontSize: '14px',
+              background: '#ffffff',
+              color: '#111827',
+              border: '1px solid #e5e7eb',
+              borderRadius: '10px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+              fontSize: '15px',
+              lineHeight: '1.5',
             },
-            // Default options for specific types
             success: {
               duration: 3000,
               style: {
-                background: '#10B981',
-                color: '#fff',
+                background: '#ffffff',
+                color: '#065f46',
+                border: '1px solid #d1fae5',
               },
             },
             error: {
-              duration: 4000,
+              duration: 5000,
               style: {
-                background: '#EF4444',
-                color: '#fff',
+                background: '#ffffff',
+                color: '#991b1b',
+                border: '1px solid #fecaca',
               },
             },
           }}
