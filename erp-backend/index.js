@@ -6,6 +6,9 @@ import pool from "./db.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import shiftRoutes from "./routes/shiftRoutes.js";
 import shiftScheduleRoutes from "./routes/shiftScheduleRoutes.js";
+// Punch sync service (CommonJS modules; import via dynamic require)
+import path from "path";
+import { fileURLToPath, pathToFileURL } from "url";
 
 dotenv.config();
 
@@ -40,6 +43,7 @@ app.use("/api/shifts", shiftRoutes);
 // Shift schedule routes
 app.use("/api/shift-schedules", shiftScheduleRoutes);
 
+
 // 404 handler for unmatched routes
 app.use((req, res) => {
     res.status(404).json({ success: false, error: "Route not found" });
@@ -60,5 +64,22 @@ app.listen(PORT, async () => {
         console.log(`📅 Database connected: ${result.rows[0].now}`);
     } catch (err) {
         console.error("❌ Database connection failed:", err.message);
+    }
+
+    // Start punch sync service (immediate + scheduler)
+    try {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+    const syncPath = path.join(__dirname, "punch-sync-service", "src", "services", "syncService.js");
+    const schedPath = path.join(__dirname, "punch-sync-service", "src", "scheduler", "scheduler.js");
+    const syncApp = (await import(pathToFileURL(syncPath).href)).default;
+    const schedulerMod = (await import(pathToFileURL(schedPath).href)).default;
+    // Immediate sync
+    syncApp.syncPunchData().catch((e) => console.error("Initial punch sync failed:", e.message));
+    // Start scheduler
+    schedulerMod.startScheduler();
+        console.log("🕒 Punch sync service started (5-min interval)");
+    } catch (e) {
+        console.error("⚠️ Failed to start punch sync service:", e.message);
     }
 });
