@@ -9,7 +9,8 @@ const ShiftAssignmentDropdown = ({
   employeeId, 
   day,
   isReadOnly = false,
-  cellDateObj
+  cellDateObj,
+  directAssignShift = ''
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -34,7 +35,7 @@ const ShiftAssignmentDropdown = ({
     const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const cellDate = cellDateObj ? new Date(cellDateObj.getFullYear(), cellDateObj.getMonth(), cellDateObj.getDate()) : todayDate;
     const isPast = cellDate < todayDate;
-    if (isPast) {
+    if (isPast && !directAssignShift) {
       toast((t) => (
         <div className="flex flex-col space-y-3">
           <div className="flex items-center space-x-2">
@@ -86,16 +87,24 @@ const ShiftAssignmentDropdown = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => !isReadOnly && setIsOpen(!isOpen)}
+        onClick={() => {
+          if (isReadOnly) return;
+          if (directAssignShift) {
+            // Direct assign overrides confirmation and dropdown
+            handleShiftSelect(directAssignShift);
+          } else {
+            setIsOpen(!isOpen);
+          }
+        }}
         className={`inline-flex items-center justify-center w-8 h-8 rounded-md text-xs font-medium transition-opacity ${currentColors.bgColor} ${currentColors.textColor} border ${currentColors.borderColor} ${
           isReadOnly ? 'opacity-60 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer'
-        } ${isUnassigned ? 'bg-transparent text-gray-300 border-transparent hover:bg-gray-100 font-normal' : ''}`}
+        } ${isUnassigned ? 'bg-transparent text-gray-300 border-transparent hover:bg-gray-100 font-normal' : ''} ${directAssignShift ? 'ring-1 ring-blue-400' : ''}`}
         disabled={isReadOnly}
       >
         {currentShift || String(day)}
       </button>
 
-      {isOpen && !isReadOnly && (
+  {isOpen && !isReadOnly && !directAssignShift && (
         <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-3 min-w-[200px]">
           <div className="grid grid-cols-2 gap-2">
             

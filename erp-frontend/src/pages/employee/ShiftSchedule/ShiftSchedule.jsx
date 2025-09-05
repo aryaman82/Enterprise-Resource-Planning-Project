@@ -5,10 +5,12 @@ import EditShiftMasterModal from './EditShiftMasterModal';
 import ShiftAssignmentDropdown from './ShiftAssignmentDropdown';
 import { useShiftMaster } from './useShiftMaster';
 import { getShiftColors } from './shiftUtils';
+import SelectFillToolbar from './SelectFillToolbar';
 
 const ShiftSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [directAssignShift, setDirectAssignShift] = useState(''); // when set, clicking a cell assigns this shift directly
   
   const {
     employees,
@@ -27,6 +29,8 @@ const ShiftSchedule = () => {
     const colors = getShiftColors(shiftCode);
     return `${colors.bgColor} ${colors.textColor} border ${colors.borderColor}`;
   };
+
+  const toggleDirectAssign = (code) => setDirectAssignShift(prev => (prev === code ? '' : code));
 
   const navigateMonth = (direction) => {
     if (direction === 'next') {
@@ -118,6 +122,13 @@ const ShiftSchedule = () => {
         })}
       </div>
 
+      <SelectFillToolbar
+        shiftTypes={shiftTypes}
+        directAssignShift={directAssignShift}
+        onSelectShift={toggleDirectAssign}
+        headerOffset={80}
+      />
+
       {/* Shift Schedule Table */}
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
@@ -170,6 +181,7 @@ const ShiftSchedule = () => {
                             day={day}
                             isReadOnly={false}
                             cellDateObj={cellDateObj}
+                            directAssignShift={directAssignShift}
                           />
                         </div>
                       </td>
