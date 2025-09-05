@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Download, Edit3, Save } from 'lucide-react';
-import { addMonths, isAfter, startOfMonth, format } from 'date-fns';
+import { ChevronLeft, ChevronRight, Download, Edit3 } from 'lucide-react';
+import { addMonths, format } from 'date-fns';
 import EditShiftMasterModal from './EditShiftMasterModal';
 import ShiftAssignmentDropdown from './ShiftAssignmentDropdown';
 import { useShiftMaster } from './useShiftMaster';
-import { getShiftColors, formatTime } from './shiftUtils';
-import toast from 'react-hot-toast';
+import { getShiftColors } from './shiftUtils';
 
 const ShiftSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -15,10 +14,8 @@ const ShiftSchedule = () => {
     employees,
     shiftTypes,
     scheduleData,
-    loading,
-    isSaving,
-    updateShift,
-    saveSchedule
+  loading,
+  updateShift
   } = useShiftMaster(currentDate);
 
   const currentMonthDisplay = currentDate.toLocaleDateString('en-US', { 
@@ -39,17 +36,7 @@ const ShiftSchedule = () => {
     }
   };
 
-  // Check if current month is in the past (for read-only mode)
-  const isCurrentMonthPast = () => {
-    const today = new Date();
-    const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const todayMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    return currentMonthStart < todayMonthStart;
-  };
-
-  const handleSaveSchedule = async () => {
-    await saveSchedule();
-  };
+  // Removed manual save; updates are auto-saved on selection
 
   const handleEditShiftMaster = () => {
     setIsEditModalOpen(true);
@@ -59,8 +46,9 @@ const ShiftSchedule = () => {
     console.log('Export shift schedule');
   };
 
-  // Generate array for days 1-31
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  // Generate array for actual days in current month
+  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   if (loading) {
     return (
@@ -93,17 +81,7 @@ const ShiftSchedule = () => {
           </button>
         </div>
 
-        <div className="flex items-center space-x-3">
-          {!isCurrentMonthPast() && (
-            <button
-              onClick={handleSaveSchedule}
-              className={`flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors ${isSaving ? 'opacity-60 cursor-not-allowed' : ''}`}
-              disabled={isSaving}
-            >
-              <Save className="h-4 w-4" />
-              <span>{isSaving ? 'Saving...' : 'Save Schedule'}</span>
-            </button>
-          )}
+  <div className="flex items-center space-x-3">
           <button
             onClick={handleExport}
             className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700"
@@ -146,7 +124,7 @@ const ShiftSchedule = () => {
           <table className="w-full table-fixed">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-60">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-60 sticky left-0 z-20 bg-gray-50 border-r border-gray-200">
                   Employee
                 </th>
                 {days.map((day) => (
@@ -162,7 +140,7 @@ const ShiftSchedule = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {employees.map((employee, index) => (
                 <tr key={employee.emp_code || employee.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <td className="px-6 py-4 whitespace-nowrap w-60">
+                  <td className={`px-6 py-4 whitespace-nowrap w-60 sticky left-0 z-10 border-r border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
@@ -180,12 +158,6 @@ const ShiftSchedule = () => {
                   {days.map((day) => {
                     const scheduleKey = `${employee.emp_code || employee.id}_${format(currentDate, 'yyyy-MM')}_${day}`;
                     const shiftCode = scheduleData[scheduleKey] || '';
-                    // Calculate if this cell is editable: today, yesterday, or future
-                    const today = new Date();
-                    const cellDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                    const diffDays = Math.floor((cellDate - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / (1000 * 60 * 60 * 24));
-                    // Editable if today (0), yesterday (-1), or future (>0)
-                    const isEditable = diffDays >= -1;
                     const cellDateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
                     return (
                       <td key={day} className="px-1 py-4 text-center w-12">
