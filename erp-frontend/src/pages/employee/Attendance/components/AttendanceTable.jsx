@@ -6,67 +6,15 @@ const AttendanceTable = ({
   error = null,
   onRefresh = null 
 }) => {
-  // Fallback data if no data is provided
-  const defaultAttendanceData = [
-    {
-      id: '39488846',
-      name: 'Bagus Fikri',
-      clockIn: '10:02 AM',
-      clockOut: '07:00 PM',
-      overtime: '2h 12m',
-      status: 'Present',
-      notes: 'Discussed mutual value proposition...',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bagus'
-    },
-    {
-      id: '34534543',
-      name: 'Ihdzain',
-      clockIn: '09:30 AM',
-      clockOut: '07:12 PM',
-      overtime: '-',
-      status: 'Present',
-      notes: 'Tynisha is already lined up for th...',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ihdzain'
-    },
-    {
-      id: '82747837',
-      name: 'Mufli Hidayat',
-      clockIn: '09:24 AM',
-      clockOut: '05:00 PM',
-      overtime: '-',
-      status: 'Left for the day',
-      notes: 'Marci is already doing some gre...',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mufli'
-    },
-    {
-      id: '39488844',
-      name: 'Fauzan Ardiansyah',
-      clockIn: '08:56 AM',
-      clockOut: '05:01 PM',
-      overtime: '-',
-      status: 'Absent',
-      notes: 'Tynisha is already lined up for th...',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Fauzan'
-    },
-    {
-      id: '93884744',
-      name: 'Raihan Fikri',
-      clockIn: '08:56 AM',
-      clockOut: '07:00 PM',
-      overtime: '1h 05m',
-      status: 'Present',
-      notes: 'Discussed mutual value proposi...',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Raihan'
-    }
-  ];
-
-  // Use provided data or fallback to default data
-  const dataToDisplay = attendanceData.length > 0 ? attendanceData : defaultAttendanceData;
+  // Use only the provided (real) data
+  const dataToDisplay = attendanceData;
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'Present':
         return 'bg-green-100 text-green-800';
+      case 'Working':
+        return 'bg-yellow-100 text-yellow-800';
       case 'Absent':
         return 'bg-red-100 text-red-800';
       case 'Left for the day':
@@ -158,14 +106,17 @@ const AttendanceTable = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-100">
-                        <img
-                          src={employee.avatar}
-                          alt={employee.name}
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(employee.name)}&background=e5e7eb&color=6b7280`;
-                          }}
-                        />
+                        {(() => {
+                          const displayName = employee.name || employee.id || employee.employeeId || '';
+                          const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=e5e7eb&color=6b7280`;
+                          return (
+                            <img
+                              src={avatarUrl}
+                              alt={displayName}
+                              className="h-full w-full object-cover"
+                            />
+                          );
+                        })()}
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{employee.name}</div>

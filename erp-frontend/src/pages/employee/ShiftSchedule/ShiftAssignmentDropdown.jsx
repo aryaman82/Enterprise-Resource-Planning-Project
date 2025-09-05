@@ -81,6 +81,7 @@ const ShiftAssignmentDropdown = ({
   };
 
   const currentColors = getShiftColors(currentShift);
+  const isUnassigned = !currentShift;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -88,10 +89,10 @@ const ShiftAssignmentDropdown = ({
         onClick={() => !isReadOnly && setIsOpen(!isOpen)}
         className={`inline-flex items-center justify-center w-8 h-8 rounded-md text-xs font-medium transition-opacity ${currentColors.bgColor} ${currentColors.textColor} border ${currentColors.borderColor} ${
           isReadOnly ? 'opacity-60 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer'
-        }`}
+        } ${isUnassigned ? 'bg-transparent text-gray-300 border-transparent hover:bg-gray-100 font-normal' : ''}`}
         disabled={isReadOnly}
       >
-        {currentShift || '-'}
+        {currentShift || String(day)}
       </button>
 
       {isOpen && !isReadOnly && (

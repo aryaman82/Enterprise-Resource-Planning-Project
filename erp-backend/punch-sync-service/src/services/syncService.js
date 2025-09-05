@@ -57,4 +57,43 @@ async function syncPunchData(options = {}) {
     }
 }
 
-module.exports = { syncPunchData };
+// Explicit date range sync (accepts JS Date or string 'YYYY-MM-DD' or formatted string)
+async function syncPunchDataRange({ from, to, empcode } = {}) {
+    try {
+        if (!from || !to) throw new Error('Both from and to are required');
+
+        const parseLoose = (val, endOfDay = false) => {
+            if (val instanceof Date) return val;
+            if (typeof val === 'string') {
+                // Allow 'YYYY-MM-DD' and 'YYYY-MM-DDTHH:mm'
+                const d = new Date(val);
+                if (!isNaN(d.getTime())) {
+                    if (endOfDay && val.length <= 10) {
+                        // Set to 23:59 for date-only string
+                        d.setHours(23, 59, 0, 0);
+                    }
+                    return d;
+                }
+            }
+            throw new Error('Invalid date: ' + val);
+        };
+
+        const fromDate = parseLoose(from, false);
+        const toDate = parseLoose(to, true);
+
+        const Empcode = empcode || config.api.defaultEmpcode;
+        const FromDate = formatApiDate(fromDate);
+        const ToDate = formatApiDate(toDate);
+
+        logger.info(`Range sync IST From=${FromDate} To=${ToDate}`);
+        const records = await fetchPunchData({ empcode: Empcode, fromDate: FromDate, toDate: ToDate });
+        const { fetched, inserted, skipped } = await insertPunchData(records);
+        logger.stats({ fetched, inserted, skipped });
+        return { fetched, inserted, skipped };
+    } catch (error) {
+        logger.error(`Range sync failed: ${error.message}`);
+        throw error;
+    }
+}
+
+module.exports = { syncPunchData, syncPunchDataRange };

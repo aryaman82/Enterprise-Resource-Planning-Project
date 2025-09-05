@@ -6,6 +6,7 @@ import pool from "./db.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import shiftRoutes from "./routes/shiftRoutes.js";
 import shiftScheduleRoutes from "./routes/shiftScheduleRoutes.js";
+import attendanceRoutes from "./routes/attendanceRoutes.js";
 // Punch sync service (CommonJS modules; import via dynamic require)
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -33,12 +34,32 @@ app.post("/api/punch-sync", async (req, res) => {
     if (isSyncRunning) return res.status(409).json({ success: false, error: "Sync already in progress" });
     isSyncRunning = true;
     try {
-        const syncMod = (await import(pathToFileURL(syncPath).href)).default;
+    const syncMod = (await import(pathToFileURL(syncPath).href)).default;
     const days = Number(req.body?.forceBackfillDays || 0);
     const result = await syncMod.syncPunchData(days > 0 ? { forceBackfillDays: days } : {});
         res.json({ success: true, ...result });
     } catch (e) {
         console.error("Manual punch sync failed:", e.message);
+        res.status(500).json({ success: false, error: e.message });
+    } finally {
+        isSyncRunning = false;
+    }
+});
+
+// Explicit range import endpoint
+app.post("/api/punch-sync/range", async (req, res) => {
+    if (isSyncRunning) return res.status(409).json({ success: false, error: "Sync already in progress" });
+    isSyncRunning = true;
+    try {
+        const syncMod = (await import(pathToFileURL(syncPath).href)).default;
+        const { from, to, empcode } = req.body || {};
+        if (!from || !to) {
+            return res.status(400).json({ success: false, error: "from and to are required (YYYY-MM-DD)" });
+        }
+        const result = await syncMod.syncPunchDataRange({ from, to, empcode });
+        res.json({ success: true, ...result });
+    } catch (e) {
+        console.error("Range punch sync failed:", e.message);
         res.status(500).json({ success: false, error: e.message });
     } finally {
         isSyncRunning = false;
@@ -64,6 +85,9 @@ app.use("/api/shifts", shiftRoutes);
 
 // Shift schedule routes
 app.use("/api/shift-schedules", shiftScheduleRoutes);
+
+// Attendance routes
+app.use("/api/attendance", attendanceRoutes);
 
 
 // 404 handler for unmatched routes
