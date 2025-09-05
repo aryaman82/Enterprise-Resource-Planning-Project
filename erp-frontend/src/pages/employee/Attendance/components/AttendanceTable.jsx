@@ -24,13 +24,6 @@ const AttendanceTable = ({
     }
   };
 
-  const calculateProgressWidth = (clockIn, clockOut) => {
-    // Simple calculation for progress bar width
-    // This could be enhanced with actual time calculations
-    if (clockOut === '-' || !clockOut) return '30%';
-    return '70%';
-  };
-
   if (loading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200">
@@ -129,12 +122,6 @@ const AttendanceTable = ({
                       <span className="text-sm text-gray-900">{employee.clockIn || '-'}</span>
                       <span className="text-gray-400">—</span>
                       <span className="text-sm text-gray-900">{employee.clockOut || '-'}</span>
-                    </div>
-                    <div className="w-32 bg-gray-200 rounded-full h-1 mt-2">
-                      <div 
-                        className="bg-blue-600 h-1 rounded-full transition-all duration-300" 
-                        style={{ width: calculateProgressWidth(employee.clockIn, employee.clockOut) }}
-                      ></div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

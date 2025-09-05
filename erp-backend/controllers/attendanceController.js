@@ -6,11 +6,12 @@ const parseOutBuffer = (value, def = 240) => {
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : def;
 };
 
-// GET /api/attendance/for-shift?date=YYYY-MM-DD&shift_code=G&outBufferMinutes=240
+// GET /api/attendance/for-shift?date=YYYY-MM-DD&shift_code=G&outBufferMinutes=360
 export const getAttendanceForShift = async (req, res) => {
   try {
     const { date, shift_code } = req.query;
-    const outBufferMinutes = parseOutBuffer(req.query.outBufferMinutes, 240); // default 4h after end
+  // Default after-end buffer to 6 hours to support the clock-out rule (end + 6h)
+  const outBufferMinutes = parseOutBuffer(req.query.outBufferMinutes, 360);
     if (!date || !shift_code) {
       return res.status(400).json({ success: false, message: 'date and shift_code are required' });
     }
@@ -72,7 +73,7 @@ export const getAttendanceForShift = async (req, res) => {
         CROSS JOIN bounds b
         CROSS JOIN now_ist n
         WHERE p.emp_code = ANY($5::text[])
-      AND p.punch_time BETWEEN (b.shift_start - interval '5 hours')
+      AND p.punch_time BETWEEN (b.shift_start - interval '4 hours')
                                AND (b.shift_end + make_interval(mins => (SELECT out_mins FROM params)))
         ORDER BY p.emp_code ASC, p.punch_time ASC`,
       [date, shift.start_time, shift.end_time, outBufferMinutes, empCodes]
@@ -110,40 +111,45 @@ export const getAttendanceForShift = async (req, res) => {
 
     const results = [];
     let present = 0, working = 0, absent = 0;
-  // Clock-in window: ±5 hours around shift start
-  const inMarginMinutes = 300; // 5 hours
-  const startMinus = new Date(new Date(shiftStart).getTime() - inMarginMinutes * 60 * 1000);
-  const startPlus = new Date(new Date(shiftStart).getTime() + inMarginMinutes * 60 * 1000);
+    // Clock-in window: ±4 hours around shift start
+    const inMarginMinutes = 240; // 4 hours
+    const startMinus = new Date(new Date(shiftStart).getTime() - inMarginMinutes * 60 * 1000);
+    const startPlus = new Date(new Date(shiftStart).getTime() + inMarginMinutes * 60 * 1000);
     const endTs = new Date(shiftEnd);
     const now = new Date(nowIst);
 
+    // Clock-out window: from 2 hours before shift end to 6 hours after shift end
+    const outBeforeEndMinutes = 120; // 2 hours before end
+    const outAfterEndMinutes = outBufferMinutes; // default 360 = 6 hours after end (configurable via query)
+    const outStart = new Date(endTs.getTime() - outBeforeEndMinutes * 60 * 1000);
+    const outEnd = new Date(endTs.getTime() + outAfterEndMinutes * 60 * 1000);
+
     for (const emp of employees) {
       const punches = punchesByEmp.get(emp.emp_code) || [];
-      // clock_in: first punch within ±1h of shift start
+      // clock_in: first punch within ±4h of shift start
       const withinStartWindow = punches.filter(t => t >= startMinus && t <= startPlus);
       const clock_in = withinStartWindow.length > 0 ? withinStartWindow[0] : null;
 
-      // clock_out: next punch after clock_in (if any)
+      // clock_out: first punch within the clock-out window [end-2h, end+6h];
+      // ignore mid-shift punches outside this window.
       let clock_out = null;
       if (clock_in) {
-        for (const t of punches) {
-          if (t > clock_in) { clock_out = t; break; }
-        }
+        const withinOutWindow = punches.filter(t => t >= outStart && t <= outEnd);
+        clock_out = withinOutWindow.length > 0 ? withinOutWindow[0] : null;
       }
 
       let status = 'Absent';
-      if (clock_in) {
-        if (clock_out && clock_out >= endTs) {
-          status = 'Present';
-        } else if (now <= endTs) {
-          status = 'Working';
+    if (clock_in) {
+        const minHoursForPresent = 8; // new rule
+        const minMsForPresent = minHoursForPresent * 60 * 60 * 1000;
+        if (clock_out && clock_out > clock_in) {
+          const workedMs = clock_out.getTime() - clock_in.getTime();
+          status = workedMs >= minMsForPresent ? 'Present' : (now < outEnd ? 'Working' : 'Absent');
         } else {
-          // Shift is over and no checkout past end
-          status = 'Absent';
+      // No checkout yet — if we're still within or before the out window, they're working
+      // Becomes Absent once the out window closes
+          status = now < outEnd ? 'Working' : 'Absent';
         }
-      } else {
-        // No in punch near start
-        status = now <= endTs ? 'Absent' : 'Absent';
       }
 
       if (status === 'Present') present++; else if (status === 'Working') working++; else absent++;
@@ -170,8 +176,15 @@ export const getAttendanceForShift = async (req, res) => {
         counts: { present, working, absent },
         rules: {
           timezone: 'Asia/Kolkata',
-          inMarginMinutes: 300,
-          outBufferMinutes
+          inMarginMinutes: 240,
+          outWindowBeforeEndMinutes: 120,
+          outWindowAfterEndMinutes: outAfterEndMinutes,
+          minHoursForPresent: 8,
+          absentCriteria: {
+            noClockIn: true,
+            noClockOutAfterWindow: true,
+            workedTimeLessThanHours: 8
+          }
         }
       }
     });
