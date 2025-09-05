@@ -22,17 +22,22 @@ function addMinutesIST(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);
 }
 
-async function syncPunchData() {
+async function syncPunchData(options = {}) {
     try {
-        // Decide window: backfill 7 days if no data, else from last max to now
+        // Decide window
         const last = await getLastPunchTimestamp();
         let fromIST;
         let toIST;
-        if (!last) {
+        const forceDays = Number(options.forceBackfillDays || 0);
+        if (forceDays > 0) {
+            // Force backfill window regardless of DB state
+            toIST = nowIST();
+            fromIST = addMinutesIST(toIST, -forceDays * 24 * 60);
+        } else if (!last) {
             toIST = nowIST();
             fromIST = addMinutesIST(toIST, -config.initialBackfillDays * 24 * 60);
         } else {
-            // Start 5 minutes before last to be safe window overlap
+            // Incremental window from last max - 5 minutes to now
             fromIST = addMinutesIST(new Date(last), -5);
             toIST = nowIST();
         }
