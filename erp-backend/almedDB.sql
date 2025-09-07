@@ -5,20 +5,16 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.attendance
 (
-    attendance_id serial NOT NULL,
     emp_code text COLLATE pg_catalog."default" NOT NULL,
     attendance_date date NOT NULL,
     shift_code text COLLATE pg_catalog."default" NOT NULL,
     clock_in timestamp without time zone,
     clock_out timestamp without time zone,
     status text COLLATE pg_catalog."default",
-    remarks text COLLATE pg_catalog."default",
-    is_unscheduled boolean DEFAULT false,
-    is_valid boolean DEFAULT true,
-    ot_hours integer DEFAULT 0,
-    ot_approved boolean DEFAULT false,
-    ot_flagged boolean DEFAULT false,
-    CONSTRAINT attendance_pkey PRIMARY KEY (attendance_id)
+    is_flagged boolean DEFAULT false,
+    processed_at timestamp without time zone DEFAULT now(),
+    last_updated timestamp without time zone DEFAULT now(),
+    CONSTRAINT attendance_pkey PRIMARY KEY (emp_code, attendance_date)
 );
 
 CREATE TABLE IF NOT EXISTS public.clients
