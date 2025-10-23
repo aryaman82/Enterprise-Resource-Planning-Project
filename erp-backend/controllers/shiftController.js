@@ -1,4 +1,4 @@
-import pool from '../db.js';
+import pool from '../src/db.js';
 
 export const getAllShifts = async (req, res) => {
   try {

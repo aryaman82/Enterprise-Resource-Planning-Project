@@ -1,4 +1,4 @@
-import pool from '../db.js';
+import pool from '../src/db.js';
 
 // Get shift schedule for a specific month
 export const getShiftScheduleForMonth = async (req, res) => {
