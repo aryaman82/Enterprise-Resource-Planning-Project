@@ -1,0 +1,18 @@
+{
+  "api": {
+    "baseUrl": "https://api.etimeoffice.com/api/DownloadPunchData",
+    "username": "almed:almed:almed@48:true",
+    "password": "almed48",
+  "defaultEmpcode": "ALL"
+  },
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "almeddb",
+    "user": "postgres",
+    "password": "root"
+  },
+  "timezone": "Asia/Kolkata",
+  "initialBackfillDays": 7,
+  "schedule": "*/5 * * * *"
+}
