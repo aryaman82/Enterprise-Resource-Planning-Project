@@ -2783,3 +2783,13 @@
 2025-10-25T17:40:00.301Z - INFO  API responded status=200 count=4
 2025-10-25T17:40:00.305Z - STATS fetched=4 inserted=0 skipped=4
 2025-10-25T17:40:00.306Z - INFO  Scheduled sync OK. Inserted=0, Skipped=4
+2025-10-25T17:45:00.115Z - INFO  Sync window IST From=25/10/2025_20:05 To=25/10/2025_23:15
+2025-10-25T17:45:00.116Z - INFO  Fetching punches: Empcode=ALL FromDate=25/10/2025_20:05 ToDate=25/10/2025_23:15 auth=basic
+2025-10-25T17:45:00.411Z - INFO  API responded status=200 count=4
+2025-10-25T17:45:00.419Z - STATS fetched=4 inserted=0 skipped=4
+2025-10-25T17:45:00.420Z - INFO  Scheduled sync OK. Inserted=0, Skipped=4
+2025-10-25T17:50:00.093Z - INFO  Sync window IST From=25/10/2025_20:05 To=25/10/2025_23:20
+2025-10-25T17:50:00.093Z - INFO  Fetching punches: Empcode=ALL FromDate=25/10/2025_20:05 ToDate=25/10/2025_23:20 auth=basic
+2025-10-25T17:50:00.333Z - INFO  API responded status=200 count=4
+2025-10-25T17:50:00.335Z - STATS fetched=4 inserted=0 skipped=4
+2025-10-25T17:50:00.335Z - INFO  Scheduled sync OK. Inserted=0, Skipped=4
