@@ -153,9 +153,22 @@ export const exportOrdersToCSV = (orders) => {
     URL.revokeObjectURL(url);
 };
 
-// Filter orders based on search term, status, and time
-export const filterOrders = (orders, searchTerm, statusFilter, timeFilter) => {
+// Filter orders based on view mode, search term, status, and time
+export const filterOrders = (orders, searchTerm, statusFilter, timeFilter, viewMode = 'ongoing') => {
     return orders.filter((order) => {
+        // View mode filter - separate ongoing orders from dispatched orders
+        const status = computeOrderStatus(order);
+        if (viewMode === 'ongoing') {
+            // Ongoing orders: exclude 'Dispatched' status
+            if (status.status === 'Dispatched') {
+                return false;
+            }
+        } else if (viewMode === 'history') {
+            // History: only show 'Dispatched' status
+            if (status.status !== 'Dispatched') {
+                return false;
+            }
+        }
         // Search filter
         const searchLower = searchTerm.toLowerCase();
         const matchesSearch = 

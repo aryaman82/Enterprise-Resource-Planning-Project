@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { User } from 'lucide-react';
 import Clients from './admin/Clients';
 import Designs from './admin/Designs';
+import CupTypes from './admin/CupTypes';
 import { classNames } from '../constants/classNames';
 import { colors } from '../constants/colors';
 import { t } from '../utils/translations';
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState('clients');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'clients');
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const tabs = [
     { id: 'clients', name: t('admin.tabs.clients'), component: Clients },
     { id: 'designs', name: t('admin.tabs.designs'), component: Designs },
+    { id: 'cup-types', name: 'Cup Types', component: CupTypes },
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || Clients;
@@ -49,7 +60,10 @@ const Admin = () => {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setSearchParams({ tab: tab.id });
+                    }}
                     className={isActive ? classNames.tab.button.active : classNames.tab.button.inactive}
                   >
                     {tab.name}

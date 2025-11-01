@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, Plus } from 'lucide-react';
 import { fetchClients } from '../../api/client.api';
-import { fetchDesigns } from '../../api/design.api';
+import { fetchCupTypes } from '../../api/cupType.api';
+import { useNavigate } from 'react-router-dom';
+import CustomDropdown from './components/CustomDropdown';
+import LabeledInput from './components/LabeledInput';
 
 /**
  * AddOrderModal - Popup card form for creating or editing an order
@@ -12,31 +15,41 @@ import { fetchDesigns } from '../../api/design.api';
  *   order (object): Optional order object for editing
  */
 const AddOrderModal = ({ open, onClose, onSubmit, order }) => {
+  const navigate = useNavigate();
   const [clients, setClients] = useState([]);
-  const [designs, setDesigns] = useState([]);
+  const [cupTypes, setCupTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+  const [selectedClientId, setSelectedClientId] = useState(order ? order.client_id : '');
+  const [selectedCupSpecsId, setSelectedCupSpecsId] = useState(order ? order.cup_specs_id : '');
 
   const isEditing = !!order;
 
-  // Fetch clients and designs when modal opens
+  // Fetch clients and cup types when modal opens
   useEffect(() => {
     if (open) {
-      loadClientsAndDesigns();
+      loadClientsAndCupTypes();
+      if (order) {
+        setSelectedClientId(order.client_id || '');
+        setSelectedCupSpecsId(order.cup_specs_id || '');
+      } else {
+        setSelectedClientId('');
+        setSelectedCupSpecsId('');
+      }
     }
-  }, [open]);
+  }, [open, order]);
 
-  const loadClientsAndDesigns = async () => {
+  const loadClientsAndCupTypes = async () => {
     setLoadingData(true);
     try {
-      const [clientsData, designsData] = await Promise.all([
+      const [clientsData, cupTypesData] = await Promise.all([
         fetchClients(),
-        fetchDesigns()
+        fetchCupTypes()
       ]);
       setClients(clientsData);
-      setDesigns(designsData);
+      setCupTypes(cupTypesData);
     } catch (error) {
-      console.error('Error loading clients/designs:', error);
+      console.error('Error loading clients/cup types:', error);
     } finally {
       setLoadingData(false);
     }
@@ -93,67 +106,95 @@ const AddOrderModal = ({ open, onClose, onSubmit, order }) => {
             className="space-y-4"
             onSubmit={handleSubmit}
           >
-            {/* Client and Design Selection - Required Fields */}
+            {/* New Cup Type Button */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  navigate('/admin?tab=cup-types');
+                }}
+                className="text-xs text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md flex items-center mb-2 transition-colors duration-200"
+                disabled={loading}
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                New Cup Type
+              </button>
+            </div>
+
+            {/* Client and Cup Type Selection - Required Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Client Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Client <span className="text-red-500">*</span>
                 </label>
-                <select
+                <CustomDropdown
                   name="clientId"
-                  defaultValue={order ? order.client_id : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={selectedClientId}
+                  options={clients.map(client => ({
+                    value: client.client_id,
+                    label: client.name
+                  }))}
+                  placeholder="Select a client"
                   required
-                  disabled={loading}
-                >
-                  <option value="">Select a client</option>
-                  {clients.map((client) => (
-                    <option key={client.client_id} value={client.client_id}>
-                      {client.name}
-                    </option>
-                  ))}
-                </select>
+                  disabled={loading || clients.length === 0}
+                  onChange={(e) => setSelectedClientId(e.target.value)}
+                  getOptionLabel={(option) => option.label}
+                  getOptionValue={(option) => option.value}
+                />
                 {clients.length === 0 && (
                   <p className="text-xs text-red-500 mt-1">No clients available. Please add clients first.</p>
                 )}
               </div>
 
-              {/* Design Selection */}
+              {/* Cup Type Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Design <span className="text-red-500">*</span>
+                  Cup Type <span className="text-red-500">*</span>
                 </label>
-                <select
-                  name="designId"
-                  defaultValue={order ? order.design_id : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <CustomDropdown
+                  name="cupSpecsId"
+                  value={selectedCupSpecsId}
+                  options={cupTypes.map(cupType => ({
+                    value: cupType.label_id,
+                    label: `${cupType.label}${cupType.design_name ? ` (${cupType.design_name})` : ''} - ${cupType.volume}ml, ${cupType.diameter}cm`
+                  }))}
+                  placeholder="Select a cup type"
                   required
-                  disabled={loading}
-                >
-                  <option value="">Select a design</option>
-                  {designs.map((design) => (
-                    <option key={design.design_id} value={design.design_id}>
-                      {design.name}
-                    </option>
-                  ))}
-                </select>
-                {designs.length === 0 && (
-                  <p className="text-xs text-red-500 mt-1">No designs available. Please add designs first.</p>
+                  disabled={loading || cupTypes.length === 0}
+                  onChange={(e) => setSelectedCupSpecsId(e.target.value)}
+                  getOptionLabel={(option) => option.label}
+                  getOptionValue={(option) => option.value}
+                />
+                {cupTypes.length === 0 && (
+                  <p className="text-xs text-red-500 mt-1">No cup types available. Please add cup types first.</p>
                 )}
               </div>
             </div>
+
+            {/* Order Quantity */}
+            <LabeledInput
+              label="Order Quantity"
+              name="orderQuantity"
+              type="number"
+              min="1"
+              step="1"
+              defaultValue={order ? order.order_quantity || '' : ''}
+              placeholder="Enter order quantity"
+              required
+              disabled={loading}
+            />
 
             {/* 2x2 Grid for Date Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Order Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Order Date</label>
-                <input 
-                  type="date" 
-                  name="orderDate" 
+                <LabeledInput
+                  label="Order Date"
+                  name="orderDate"
+                  type="date"
                   defaultValue={order ? formatDateForInput(order.order_date) : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                   required
                   disabled={loading}
                 />
@@ -161,79 +202,67 @@ const AddOrderModal = ({ open, onClose, onSubmit, order }) => {
 
               {/* Estimated Dispatch Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Dispatch Date</label>
-                <input 
-                  type="date" 
-                  name="dispatchDate" 
+                <LabeledInput
+                  label="Estimated Dispatch Date"
+                  name="dispatchDate"
+                  type="date"
                   defaultValue={order ? formatDateForInput(order.dispatch_date) : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  disabled={loading}
+                />
+              </div>
+
+              {/* Payment Due Date */}
+              <div>
+                <LabeledInput
+                  label="Payment Due Date"
+                  name="paymentDueDate"
+                  type="date"
+                  defaultValue={order ? formatDateForInput(order.payment_due_date) : ''}
                   disabled={loading}
                 />
               </div>
 
               {/* Payment Receiving Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Receiving Date</label>
-                <input 
-                  type="date" 
-                  name="paymentDate" 
+                <LabeledInput
+                  label="Payment Receiving Date"
+                  name="paymentDate"
+                  type="date"
                   defaultValue={order ? formatDateForInput(order.payment_received_date) : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                  disabled={loading}
-                />
-              </div>
-
-              {/* Invoice Amount */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Amount</label>
-                <input 
-                  type="number" 
-                  name="invoiceAmount" 
-                  min="0" 
-                  step="0.01" 
-                  placeholder="0.00"
-                  defaultValue={order && order.invoice_amount ? order.invoice_amount : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                   disabled={loading}
                 />
               </div>
             </div>
 
-            {/* Full Width Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Specs */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Specs</label>
-                <textarea 
-                  name="specs" 
-                  rows={3} 
-                  defaultValue={order ? (order.specs || '') : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" 
-                  placeholder="Enter specifications..." 
-                  disabled={loading}
-                />
-              </div>
+            {/* Invoice Amount - Full Width */}
+            <LabeledInput
+              label="Invoice Amount"
+              name="invoiceAmount"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              defaultValue={order && order.invoice_amount ? order.invoice_amount : ''}
+              disabled={loading}
+            />
 
-              {/* Remarks */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
-                <textarea 
-                  name="remarks" 
-                  rows={3} 
-                  defaultValue={order ? (order.remarks || '') : ''}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" 
-                  placeholder="Any remarks..." 
-                  disabled={loading}
-                />
-              </div>
-            </div>
+            {/* Remarks */}
+            <LabeledInput
+              label="Remarks"
+              name="remarks"
+              type="textarea"
+              rows={3}
+              defaultValue={order ? (order.remarks || '') : ''}
+              placeholder="Any remarks..."
+              disabled={loading}
+            />
 
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="mr-3 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
+                className="mr-3 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
                 disabled={loading}
               >
                 Cancel
@@ -241,7 +270,7 @@ const AddOrderModal = ({ open, onClose, onSubmit, order }) => {
               <button
                 type="submit"
                 className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 flex items-center"
-                disabled={loading || clients.length === 0 || designs.length === 0}
+                disabled={loading || clients.length === 0 || cupTypes.length === 0}
               >
                 {loading ? (
                   <>

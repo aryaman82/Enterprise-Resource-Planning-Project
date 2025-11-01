@@ -1,14 +1,31 @@
 import React from 'react';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, AlertCircle } from 'lucide-react';
 import { formatOrderReference, formatDate, computeOrderStatus } from '../utils/orderUtils';
 import OrderStatusDropdown from './OrderStatusDropdown';
 
-const OrderTableRow = ({ order, onStatusChange, onEdit, onDelete }) => {
+const OrderTableRow = ({ order, onStatusChange, onEdit, onDelete, onViewDetail }) => {
     const statusInfo = computeOrderStatus(order);
     const currentStatus = statusInfo.status;
 
+    const handleRowClick = (e) => {
+        // Don't trigger if clicking on action buttons or status dropdown
+        if (e.target.closest('button') || e.target.closest('select')) {
+            return;
+        }
+        if (onViewDetail) {
+            onViewDetail(order.order_id);
+        }
+    };
+
     return (
-        <tr className="hover:bg-gray-50 transition-colors duration-150">
+        <tr 
+            className={`transition-colors duration-150 cursor-pointer ${
+                order.is_payment_overdue 
+                    ? 'bg-red-50 hover:bg-red-100 border-l-4 border-red-500' 
+                    : 'hover:bg-gray-50'
+            }`}
+            onClick={handleRowClick}
+        >
             {/* Order Status - Editable Dropdown Button */}
             <td className="px-6 py-4 whitespace-nowrap">
                 <OrderStatusDropdown
@@ -20,8 +37,19 @@ const OrderTableRow = ({ order, onStatusChange, onEdit, onDelete }) => {
 
             {/* Reference and Client */}
             <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">
-                    {formatOrderReference(order.order_id)}
+                <div className="flex items-center gap-2">
+                    <div className="text-sm font-medium text-gray-900">
+                        {formatOrderReference(order.order_id)}
+                    </div>
+                    {order.is_payment_overdue && (
+                        <span 
+                            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-red-100 text-red-800 rounded-full"
+                            title="Payment Overdue"
+                        >
+                            <AlertCircle className="h-3 w-3" />
+                            Overdue
+                        </span>
+                    )}
                 </div>
                 <div className="text-sm text-gray-500">
                     {order.client_name || 'No client assigned'}

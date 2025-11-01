@@ -10,6 +10,8 @@ import attendanceRoutes from "./routes/attendanceRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import clientRoutes from "./routes/clientRoutes.js";
 import designRoutes from "./routes/designRoutes.js";
+import cupTypeRoutes from "./routes/cupTypeRoutes.js";
+import migrationRoutes from "./routes/migrationRoutes.js";
 // Punch sync service (CommonJS modules; import via dynamic require)
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -29,8 +31,11 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         
-        // Allow all localhost origins for development
-        if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        // Allow all localhost origins for development (any port)
+        if (origin.includes('localhost') || 
+            origin.includes('127.0.0.1') || 
+            origin.startsWith('http://localhost:') ||
+            origin.startsWith('http://127.0.0.1:')) {
             return callback(null, true);
         }
         
@@ -39,7 +44,8 @@ app.use(cors({
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 200 // For legacy browser support
 }));
 app.use(express.json());
 
@@ -112,6 +118,12 @@ app.use("/api/clients", clientRoutes);
 
 // Design routes
 app.use("/api/designs", designRoutes);
+
+// Cup Type routes
+app.use("/api/cup-types", cupTypeRoutes);
+
+// Migration routes
+app.use("/api/migrations", migrationRoutes);
 
 
 // 404 handler for unmatched routes

@@ -1,7 +1,7 @@
 import React from 'react';
 import OrderTableRow from './OrderTableRow';
 
-const OrdersTable = ({ orders, onStatusChange, onEdit, onDelete }) => {
+const OrdersTable = ({ orders, onStatusChange, onEdit, onDelete, onViewDetail }) => {
     return (
         <table className="min-w-full divide-y divide-gray-200">
             {/* Table Header */}
@@ -34,6 +34,7 @@ const OrdersTable = ({ orders, onStatusChange, onEdit, onDelete }) => {
                         onStatusChange={onStatusChange}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onViewDetail={onViewDetail}
                     />
                 ))}
             </tbody>

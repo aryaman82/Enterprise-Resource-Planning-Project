@@ -57,8 +57,8 @@ export const classNames = {
     content: 'bg-white rounded-b-lg border-l border-r border-b border-gray-200 p-6',
     nav: 'flex space-x-8',
     button: {
-      active: `${colors.text.blue.base} border-b-2 ${colors.border.blue} px-4 py-4 text-sm font-medium transition-all duration-200`,
-      inactive: `${colors.text.secondary} hover:text-blue-600 hover:border-b-2 hover:border-blue-600 px-4 py-4 text-sm font-medium transition-all duration-200 border-b-2 border-transparent focus:outline-none whitespace-nowrap bg-transparent hover:bg-transparent`,
+      active: 'bg-blue-600 text-white px-4 py-4 text-sm font-medium transition-all duration-200 rounded-t-md',
+      inactive: `${colors.text.secondary} hover:text-gray-900 px-4 py-4 text-sm font-medium transition-all duration-200 focus:outline-none whitespace-nowrap bg-transparent hover:bg-gray-50 rounded-t-md`,
     },
   },
   

@@ -40,6 +40,9 @@ CREATE TABLE IF NOT EXISTS public.cupspecs
     label text COLLATE pg_catalog."default" NOT NULL,
     diameter numeric NOT NULL,
     volume numeric NOT NULL,
+    design_id integer,
+    type text COLLATE pg_catalog."default",
+    weight numeric,
     CONSTRAINT cupspecs_pkey PRIMARY KEY (label_id)
 );
 
@@ -229,6 +232,13 @@ ALTER TABLE IF EXISTS public.attendance
     ON DELETE CASCADE;
 
 
+ALTER TABLE IF EXISTS public.cupspecs
+    ADD CONSTRAINT fk_cupspecs_design FOREIGN KEY (design_id)
+    REFERENCES public.designs (design_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
 ALTER TABLE IF EXISTS public.cups
     ADD CONSTRAINT cups_cup_id_fkey FOREIGN KEY (cup_id)
     REFERENCES public.cupspecs (label_id) MATCH SIMPLE
@@ -375,5 +385,37 @@ ALTER TABLE IF EXISTS public.shiftmapping
 -- Add constraint to ensure order status is one of the valid values
 ALTER TABLE IF EXISTS public.orders
     ADD CONSTRAINT check_order_status CHECK (status IN ('Received', 'Processing', 'In Production', 'Ready for Dispatch', 'Dispatched'));
+
+-- Function to calculate weight from diameter and volume
+CREATE OR REPLACE FUNCTION calculate_cup_weight(diameter_val numeric, volume_val numeric)
+RETURNS numeric AS $$
+BEGIN
+    -- Basic weight calculation: adjust formula based on actual requirements
+    -- This is a placeholder - you may need to adjust based on your specific weight calculation
+    RETURN ROUND((volume_val * 0.001) + (diameter_val * 0.01), 2);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Create a trigger function to auto-calculate weight
+CREATE OR REPLACE FUNCTION update_cup_weight()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.diameter IS NOT NULL AND NEW.volume IS NOT NULL THEN
+        NEW.weight = calculate_cup_weight(NEW.diameter, NEW.volume);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger to auto-calculate weight on insert/update
+DROP TRIGGER IF EXISTS trigger_update_cup_weight ON public.cupspecs;
+CREATE TRIGGER trigger_update_cup_weight
+    BEFORE INSERT OR UPDATE OF diameter, volume ON public.cupspecs
+    FOR EACH ROW
+    EXECUTE FUNCTION update_cup_weight();
+
+-- Add indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_cupspecs_design_id ON public.cupspecs(design_id);
+CREATE INDEX IF NOT EXISTS idx_cupspecs_type ON public.cupspecs(type);
 
 END;

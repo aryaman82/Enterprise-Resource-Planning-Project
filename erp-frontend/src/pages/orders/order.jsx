@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import AddOrderModal from './addordermodal';
+import OrderDetailModal from './components/OrderDetailModal';
 import { fetchOrders, addOrder, updateOrder, deleteOrder, updateOrderStatus } from '../../api/order.api';
 import { formatOrderReference, filterOrders, exportOrdersToCSV } from './utils/orderUtils';
 import OrdersPageHeader from './components/OrdersPageHeader';
@@ -13,11 +14,14 @@ import OrdersTableFooter from './components/OrdersTableFooter';
 const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState('ongoing'); // 'ongoing' or 'history'
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All Statuses');
     const [timeFilter, setTimeFilter] = useState('All Time');
     const [modalOpen, setModalOpen] = useState(false);
     const [editingOrder, setEditingOrder] = useState(null);
+    const [detailModalOpen, setDetailModalOpen] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
 
     // Fetch orders from backend
     useEffect(() => {
@@ -37,18 +41,19 @@ const Orders = () => {
         }
     };
 
-    // Filter orders based on search term, status, and time
-    const filteredOrders = filterOrders(orders, searchTerm, statusFilter, timeFilter);
+    // Filter orders based on view mode, search term, status, and time
+    const filteredOrders = filterOrders(orders, searchTerm, statusFilter, timeFilter, viewMode);
 
     const handleExport = () => {
-        if (orders.length === 0) {
+        const ordersToExport = filteredOrders.length > 0 ? filteredOrders : orders;
+        if (ordersToExport.length === 0) {
             toast.error('No orders to export');
             return;
         }
         
         try {
-            exportOrdersToCSV(orders);
-            toast.success(`Exported ${orders.length} order(s) to CSV`);
+            exportOrdersToCSV(ordersToExport);
+            toast.success(`Exported ${ordersToExport.length} order(s) to CSV`);
         } catch (error) {
             console.error('Error exporting orders:', error);
             toast.error('Failed to export orders. Please try again.');
@@ -94,16 +99,17 @@ const Orders = () => {
         const formData = new FormData(e.target);
         
         const clientId = formData.get('clientId');
-        const designId = formData.get('designId');
+        const cupSpecsId = formData.get('cupSpecsId');
         
         const orderData = {
             client_id: clientId ? parseInt(clientId) : null,
-            design_id: designId ? parseInt(designId) : null,
+            cup_specs_id: cupSpecsId || null,
+            order_quantity: formData.get('orderQuantity') ? parseInt(formData.get('orderQuantity')) : null,
             order_date: formData.get('orderDate') || null,
             dispatch_date: formData.get('dispatchDate') || null,
             payment_received_date: formData.get('paymentDate') || null,
+            payment_due_date: formData.get('paymentDueDate') || null,
             invoice_amount: formData.get('invoiceAmount') ? parseFloat(formData.get('invoiceAmount')) : null,
-            specs: formData.get('specs') || null,
             remarks: formData.get('remarks') || null,
         };
 
@@ -128,16 +134,27 @@ const Orders = () => {
         try {
             await updateOrderStatus(orderId, newStatus);
             toast.success('Status updated successfully');
-            // Update the local state
-            setOrders(orders.map(order => 
-                order.order_id === orderId 
-                    ? { ...order, status: newStatus }
-                    : order
-            ));
+            // Reload orders to get the updated status
+            await loadOrders();
+            
+            // If status changed to 'Dispatched', switch to history view
+            if (newStatus === 'Dispatched') {
+                setViewMode('history');
+            }
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error(error.message || 'Failed to update status');
         }
+    };
+
+    const handleViewDetail = (orderId) => {
+        setSelectedOrderId(orderId);
+        setDetailModalOpen(true);
+    };
+
+    const handleDetailModalClose = () => {
+        setDetailModalOpen(false);
+        setSelectedOrderId(null);
     };
 
     return (
@@ -147,6 +164,16 @@ const Orders = () => {
                 onClose={handleModalClose} 
                 onSubmit={handleModalSubmit}
                 order={editingOrder}
+            />
+            
+            <OrderDetailModal
+                orderId={selectedOrderId}
+                open={detailModalOpen}
+                onClose={handleDetailModalClose}
+                onEdit={(orderId) => {
+                    handleDetailModalClose();
+                    handleEdit(orderId);
+                }}
             />
             
             <OrdersPageHeader />
@@ -161,9 +188,36 @@ const Orders = () => {
                     onTimeFilterChange={setTimeFilter}
                     onExportClick={handleExport}
                     onNewOrderClick={handleNewOrder}
+                    viewMode={viewMode}
                 />
 
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    {/* View Mode Toggle Row */}
+                    <div className="border-b border-gray-200 bg-white">
+                        <div className="flex">
+                            <button
+                                onClick={() => setViewMode('ongoing')}
+                                className={`flex-1 px-6 py-3 text-sm font-medium transition-colors duration-200 border-r border-gray-200 ${
+                                    viewMode === 'ongoing'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                            >
+                                Ongoing Orders
+                            </button>
+                            <button
+                                onClick={() => setViewMode('history')}
+                                className={`flex-1 px-6 py-3 text-sm font-medium transition-colors duration-200 ${
+                                    viewMode === 'history'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                            >
+                                History
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div className="overflow-x-auto">
                         {loading ? (
                             <OrdersLoadingState />
@@ -179,6 +233,7 @@ const Orders = () => {
                                     onStatusChange={handleStatusChange}
                                     onEdit={handleEdit}
                                     onDelete={handleDelete}
+                                    onViewDetail={handleViewDetail}
                                 />
                                 <OrdersTableFooter totalCount={filteredOrders.length} />
                             </>
