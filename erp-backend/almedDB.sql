@@ -92,11 +92,18 @@ CREATE TABLE IF NOT EXISTS public.orders
     client_id integer,
     order_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     dispatch_date timestamp without time zone,
+    dispatch_committed_date timestamp without time zone,
+    dispatch_actual_date timestamp without time zone,
     payment_received_date timestamp without time zone,
+    payment_due_date timestamp without time zone,
     invoice_amount numeric,
+    order_quantity integer,
+    cup_specs_id text COLLATE pg_catalog."default",
+    design_volume_weight numeric,
+    dispatch_location text COLLATE pg_catalog."default",
     specs text COLLATE pg_catalog."default",
     remarks text COLLATE pg_catalog."default",
-    status text COLLATE pg_catalog."default" DEFAULT 'Recieved',
+    status text COLLATE pg_catalog."default" DEFAULT 'Received',
     created_by text COLLATE pg_catalog."default",
     last_updated timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT orders_pkey PRIMARY KEY (order_id)
@@ -417,5 +424,76 @@ CREATE TRIGGER trigger_update_cup_weight
 -- Add indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_cupspecs_design_id ON public.cupspecs(design_id);
 CREATE INDEX IF NOT EXISTS idx_cupspecs_type ON public.cupspecs(type);
+
+-- Departments table
+CREATE TABLE IF NOT EXISTS public.departments
+(
+    department_id serial NOT NULL,
+    name text COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default",
+    location text COLLATE pg_catalog."default",
+    manager text COLLATE pg_catalog."default",
+    is_active boolean DEFAULT true,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT departments_pkey PRIMARY KEY (department_id),
+    CONSTRAINT departments_name_unique UNIQUE (name)
+);
+
+-- Machines table
+CREATE TABLE IF NOT EXISTS public.machines
+(
+    machine_id serial NOT NULL,
+    department_id integer NOT NULL,
+    name text COLLATE pg_catalog."default" NOT NULL,
+    machine_code text COLLATE pg_catalog."default",
+    machine_type text COLLATE pg_catalog."default",
+    manufacturer text COLLATE pg_catalog."default",
+    model_number text COLLATE pg_catalog."default",
+    serial_number text COLLATE pg_catalog."default",
+    installation_date date,
+    capacity_per_hour integer,
+    status text COLLATE pg_catalog."default" DEFAULT 'idle',
+    is_active boolean DEFAULT true,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    remarks text COLLATE pg_catalog."default",
+    CONSTRAINT machines_pkey PRIMARY KEY (machine_id),
+    CONSTRAINT machines_department_fkey FOREIGN KEY (department_id)
+        REFERENCES public.departments (department_id) ON DELETE CASCADE,
+    CONSTRAINT machines_code_unique UNIQUE (machine_code)
+);
+
+-- Production Schedules table
+CREATE TABLE IF NOT EXISTS public.production_schedules
+(
+    schedule_id serial NOT NULL,
+    machine_id integer NOT NULL,
+    order_id integer NOT NULL,
+    order_number text COLLATE pg_catalog."default" NOT NULL,
+    quantity integer NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    end_time timestamp without time zone NOT NULL,
+    operator text COLLATE pg_catalog."default",
+    shift text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default" DEFAULT 'planned',
+    remarks text COLLATE pg_catalog."default",
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT production_schedules_pkey PRIMARY KEY (schedule_id),
+    CONSTRAINT production_schedules_machine_fkey FOREIGN KEY (machine_id)
+        REFERENCES public.machines (machine_id) ON DELETE CASCADE,
+    CONSTRAINT production_schedules_order_fkey FOREIGN KEY (order_id)
+        REFERENCES public.orders (order_id) ON DELETE CASCADE,
+    CONSTRAINT check_production_status CHECK (status IN ('planned', 'in-progress', 'completed', 'delayed', 'cancelled'))
+);
+
+-- Add foreign key indexes
+CREATE INDEX IF NOT EXISTS idx_machines_department_id ON public.machines(department_id);
+CREATE INDEX IF NOT EXISTS idx_machines_status ON public.machines(status);
+CREATE INDEX IF NOT EXISTS idx_departments_is_active ON public.departments(is_active);
+CREATE INDEX IF NOT EXISTS idx_production_schedules_machine_id ON public.production_schedules(machine_id);
+CREATE INDEX IF NOT EXISTS idx_production_schedules_order_id ON public.production_schedules(order_id);
+CREATE INDEX IF NOT EXISTS idx_production_schedules_start_time ON public.production_schedules(start_time);
 
 END;
