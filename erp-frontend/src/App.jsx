@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { NavigationbarWithDropdownMultilevelMenu } from './components/Navbar';
 import Home from './pages/home';
 import Orders from './pages/orders/order';
-import Transactions from './pages/transactions';
+import Production from './pages/production';
 import Inventory from './pages/inventory';
 import Employee from './pages/employee/employee';
 import Admin from './pages/admin';
@@ -17,7 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/production" element={<Production />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/attendance" element={<Employee />} />
           <Route path="/admin" element={<Admin />} />
