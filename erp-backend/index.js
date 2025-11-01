@@ -7,6 +7,9 @@ import employeeRoutes from "./routes/employeeRoutes.js";
 import shiftRoutes from "./routes/shiftRoutes.js";
 import shiftScheduleRoutes from "./routes/shiftScheduleRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import clientRoutes from "./routes/clientRoutes.js";
+import designRoutes from "./routes/designRoutes.js";
 // Punch sync service (CommonJS modules; import via dynamic require)
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -34,7 +37,7 @@ app.use(cors({
         // For production, you would check against specific allowed origins
         callback(new Error('Not allowed by CORS'));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
@@ -100,6 +103,15 @@ app.use("/api/shift-schedules", shiftScheduleRoutes);
 
 // Attendance routes
 app.use("/api/attendance", attendanceRoutes);
+
+// Order routes
+app.use("/api/orders", orderRoutes);
+
+// Client routes
+app.use("/api/clients", clientRoutes);
+
+// Design routes
+app.use("/api/designs", designRoutes);
 
 
 // 404 handler for unmatched routes

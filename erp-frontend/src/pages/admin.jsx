@@ -1,34 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { User } from 'lucide-react';
+import Clients from './admin/Clients';
+import Designs from './admin/Designs';
+import { classNames } from '../constants/classNames';
+import { colors } from '../constants/colors';
+import { t } from '../utils/translations';
 
 const Admin = () => {
+  const [activeTab, setActiveTab] = useState('clients');
+
+  const tabs = [
+    { id: 'clients', name: t('admin.tabs.clients'), component: Clients },
+    { id: 'designs', name: t('admin.tabs.designs'), component: Designs },
+  ];
+
+  const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || Clients;
+
   return (
-    <div className="w-screen min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className={classNames.pageContainer}>
       {/* Page Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center space-x-4">
+      <div className={classNames.pageHeader}>
+        <div className={classNames.pageContent}>
+          <div className={classNames.spacing.flexRow}>
             {/* Admin Icon */}
             <div className="flex-shrink-0">
-              <div className="bg-gray-100 p-3 rounded-lg">
-                <User className="h-8 w-8 text-gray-600" />
+              <div className={`${colors.background.tertiary} p-3 rounded-lg`}>
+                <User className={`h-8 w-8 ${colors.text.secondary}`} />
               </div>
             </div>
             
             {/* Page Title and Description */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin</h1>
-              <p className="text-gray-600 mt-1">System administration and user management.</p>
+              <h1 className={`text-3xl font-bold ${colors.text.primary}`}>{t('admin.title')}</h1>
+              <p className={`${colors.text.secondary} mt-1`}>{t('admin.description')}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Admin Panel</h2>
-          <p className="text-gray-600">This page is under construction. Admin features will be added soon.</p>
+      <div className={classNames.pageContent}>
+        {/* Tabs */}
+        <div className={classNames.tab.container}>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <nav className={classNames.tab.nav} aria-label="Tabs">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={isActive ? classNames.tab.button.active : classNames.tab.button.inactive}
+                  >
+                    {tab.name}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className={classNames.tab.content}>
+          <ActiveComponent />
         </div>
       </div>
     </div>

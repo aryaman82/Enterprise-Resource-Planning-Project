@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS public.orders
     invoice_amount numeric,
     specs text COLLATE pg_catalog."default",
     remarks text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default" DEFAULT 'Recieved',
     created_by text COLLATE pg_catalog."default",
     last_updated timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT orders_pkey PRIMARY KEY (order_id)
@@ -370,5 +371,9 @@ ALTER TABLE IF EXISTS public.shiftmapping
     REFERENCES public.shifts (shift_code) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
+
+-- Add constraint to ensure order status is one of the valid values
+ALTER TABLE IF EXISTS public.orders
+    ADD CONSTRAINT check_order_status CHECK (status IN ('Received', 'Processing', 'In Production', 'Ready for Dispatch', 'Dispatched'));
 
 END;
