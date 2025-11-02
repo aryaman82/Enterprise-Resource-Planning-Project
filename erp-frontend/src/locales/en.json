@@ -1,0 +1,141 @@
+{
+  "admin": {
+    "title": "Admin",
+    "description": "Manage clients, designs, and system settings.",
+    "tabs": {
+      "clients": "Clients",
+      "designs": "Designs"
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "newClient": "New Client",
+    "searchPlaceholder": "Search by name, email, phone...",
+    "loading": "Loading clients...",
+    "count": "Clients ({count})",
+    "emptySearch": "No clients found matching your search.",
+    "empty": "No clients found. Add your first client to get started.",
+    "columns": {
+      "name": "Client Name",
+      "email": "Email",
+      "phone": "Phone",
+      "actions": "Actions",
+      "id": "ID"
+    },
+    "actions": {
+      "edit": "Edit Client",
+      "delete": "Delete Client"
+    },
+    "delete": {
+      "confirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "success": "Client \"{name}\" deleted successfully",
+      "error": "Failed to delete client",
+      "errorRelated": "Please delete or reassign related orders first."
+    },
+    "loadError": "Failed to load clients",
+    "editError": "Failed to load client data for editing"
+  },
+  "clientModal": {
+    "title": {
+      "add": "Add New Client",
+      "edit": "Edit Client"
+    },
+    "fields": {
+      "name": {
+        "label": "Client Name",
+        "placeholder": "Enter client name",
+        "required": "Client name is required"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "client@example.com"
+      },
+      "phone": {
+        "label": "Phone",
+        "placeholder": "+1-555-0123"
+      }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "add": "Add Client",
+      "update": "Update Client",
+      "adding": "Adding...",
+      "updating": "Updating..."
+    },
+    "messages": {
+      "addSuccess": "Client \"{name}\" added successfully",
+      "updateSuccess": "Client \"{name}\" updated successfully",
+      "addError": "Failed to add client",
+      "updateError": "Failed to update client"
+    }
+  },
+  "designs": {
+    "title": "Designs",
+    "newDesign": "New Design",
+    "searchPlaceholder": "Search by name, remarks...",
+    "loading": "Loading designs...",
+    "count": "Designs ({count})",
+    "emptySearch": "No designs found matching your search.",
+    "empty": "No designs found. Add your first design to get started.",
+    "columns": {
+      "name": "Design Name",
+      "fileUrl": "File URL",
+      "remarks": "Remarks",
+      "actions": "Actions",
+      "id": "ID"
+    },
+    "actions": {
+      "edit": "Edit Design",
+      "delete": "Delete Design"
+    },
+    "delete": {
+      "confirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "success": "Design \"{name}\" deleted successfully",
+      "error": "Failed to delete design",
+      "errorRelated": "Please delete or reassign related orders first."
+    },
+    "loadError": "Failed to load designs",
+    "editError": "Failed to load design data for editing"
+  },
+  "designModal": {
+    "title": {
+      "add": "Add New Design",
+      "edit": "Edit Design"
+    },
+    "fields": {
+      "name": {
+        "label": "Design Name",
+        "placeholder": "Enter design name",
+        "required": "Design name is required"
+      },
+      "fileUrl": {
+        "label": "File URL",
+        "placeholder": "https://example.com/design.svg",
+        "helper": "Optional: URL or path to the design file"
+      },
+      "remarks": {
+        "label": "Remarks",
+        "placeholder": "Any additional notes about this design..."
+      }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "add": "Add Design",
+      "update": "Update Design",
+      "adding": "Adding...",
+      "updating": "Updating..."
+    },
+    "messages": {
+      "addSuccess": "Design \"{name}\" added successfully",
+      "updateSuccess": "Design \"{name}\" updated successfully",
+      "addError": "Failed to add design",
+      "updateError": "Failed to update design"
+    }
+  },
+  "common": {
+    "required": "*",
+    "notAvailable": "-",
+    "notAvailableShort": "N/A"
+  }
+}
+

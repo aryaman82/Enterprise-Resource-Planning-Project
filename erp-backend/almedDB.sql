@@ -40,6 +40,9 @@ CREATE TABLE IF NOT EXISTS public.cupspecs
     label text COLLATE pg_catalog."default" NOT NULL,
     diameter numeric NOT NULL,
     volume numeric NOT NULL,
+    design_id integer,
+    type text COLLATE pg_catalog."default",
+    weight numeric,
     CONSTRAINT cupspecs_pkey PRIMARY KEY (label_id)
 );
 
@@ -89,10 +92,18 @@ CREATE TABLE IF NOT EXISTS public.orders
     client_id integer,
     order_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     dispatch_date timestamp without time zone,
+    dispatch_committed_date timestamp without time zone,
+    dispatch_actual_date timestamp without time zone,
     payment_received_date timestamp without time zone,
+    payment_due_date timestamp without time zone,
     invoice_amount numeric,
+    order_quantity integer,
+    cup_specs_id text COLLATE pg_catalog."default",
+    design_volume_weight numeric,
+    dispatch_location text COLLATE pg_catalog."default",
     specs text COLLATE pg_catalog."default",
     remarks text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default" DEFAULT 'Received',
     created_by text COLLATE pg_catalog."default",
     last_updated timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT orders_pkey PRIMARY KEY (order_id)
@@ -226,6 +237,13 @@ ALTER TABLE IF EXISTS public.attendance
     REFERENCES public.shifts (shift_code) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.cupspecs
+    ADD CONSTRAINT fk_cupspecs_design FOREIGN KEY (design_id)
+    REFERENCES public.designs (design_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
 
 
 ALTER TABLE IF EXISTS public.cups
@@ -370,5 +388,112 @@ ALTER TABLE IF EXISTS public.shiftmapping
     REFERENCES public.shifts (shift_code) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
+
+-- Add constraint to ensure order status is one of the valid values
+ALTER TABLE IF EXISTS public.orders
+    ADD CONSTRAINT check_order_status CHECK (status IN ('Received', 'Processing', 'In Production', 'Ready for Dispatch', 'Dispatched'));
+
+-- Function to calculate weight from diameter and volume
+CREATE OR REPLACE FUNCTION calculate_cup_weight(diameter_val numeric, volume_val numeric)
+RETURNS numeric AS $$
+BEGIN
+    -- Basic weight calculation: adjust formula based on actual requirements
+    -- This is a placeholder - you may need to adjust based on your specific weight calculation
+    RETURN ROUND((volume_val * 0.001) + (diameter_val * 0.01), 2);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Create a trigger function to auto-calculate weight
+CREATE OR REPLACE FUNCTION update_cup_weight()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.diameter IS NOT NULL AND NEW.volume IS NOT NULL THEN
+        NEW.weight = calculate_cup_weight(NEW.diameter, NEW.volume);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger to auto-calculate weight on insert/update
+DROP TRIGGER IF EXISTS trigger_update_cup_weight ON public.cupspecs;
+CREATE TRIGGER trigger_update_cup_weight
+    BEFORE INSERT OR UPDATE OF diameter, volume ON public.cupspecs
+    FOR EACH ROW
+    EXECUTE FUNCTION update_cup_weight();
+
+-- Add indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_cupspecs_design_id ON public.cupspecs(design_id);
+CREATE INDEX IF NOT EXISTS idx_cupspecs_type ON public.cupspecs(type);
+
+-- Departments table
+CREATE TABLE IF NOT EXISTS public.departments
+(
+    department_id serial NOT NULL,
+    name text COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default",
+    location text COLLATE pg_catalog."default",
+    manager text COLLATE pg_catalog."default",
+    is_active boolean DEFAULT true,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT departments_pkey PRIMARY KEY (department_id),
+    CONSTRAINT departments_name_unique UNIQUE (name)
+);
+
+-- Machines table
+CREATE TABLE IF NOT EXISTS public.machines
+(
+    machine_id serial NOT NULL,
+    department_id integer NOT NULL,
+    name text COLLATE pg_catalog."default" NOT NULL,
+    machine_code text COLLATE pg_catalog."default",
+    machine_type text COLLATE pg_catalog."default",
+    manufacturer text COLLATE pg_catalog."default",
+    model_number text COLLATE pg_catalog."default",
+    serial_number text COLLATE pg_catalog."default",
+    installation_date date,
+    capacity_per_hour integer,
+    status text COLLATE pg_catalog."default" DEFAULT 'idle',
+    is_active boolean DEFAULT true,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    remarks text COLLATE pg_catalog."default",
+    CONSTRAINT machines_pkey PRIMARY KEY (machine_id),
+    CONSTRAINT machines_department_fkey FOREIGN KEY (department_id)
+        REFERENCES public.departments (department_id) ON DELETE CASCADE,
+    CONSTRAINT machines_code_unique UNIQUE (machine_code)
+);
+
+-- Production Schedules table
+CREATE TABLE IF NOT EXISTS public.production_schedules
+(
+    schedule_id serial NOT NULL,
+    machine_id integer NOT NULL,
+    order_id integer NOT NULL,
+    order_number text COLLATE pg_catalog."default" NOT NULL,
+    quantity integer NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    end_time timestamp without time zone NOT NULL,
+    operator text COLLATE pg_catalog."default",
+    shift text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default" DEFAULT 'planned',
+    remarks text COLLATE pg_catalog."default",
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT production_schedules_pkey PRIMARY KEY (schedule_id),
+    CONSTRAINT production_schedules_machine_fkey FOREIGN KEY (machine_id)
+        REFERENCES public.machines (machine_id) ON DELETE CASCADE,
+    CONSTRAINT production_schedules_order_fkey FOREIGN KEY (order_id)
+        REFERENCES public.orders (order_id) ON DELETE CASCADE,
+    CONSTRAINT check_production_status CHECK (status IN ('planned', 'in-progress', 'completed', 'delayed', 'cancelled'))
+);
+
+-- Add foreign key indexes
+CREATE INDEX IF NOT EXISTS idx_machines_department_id ON public.machines(department_id);
+CREATE INDEX IF NOT EXISTS idx_machines_status ON public.machines(status);
+CREATE INDEX IF NOT EXISTS idx_departments_is_active ON public.departments(is_active);
+CREATE INDEX IF NOT EXISTS idx_production_schedules_machine_id ON public.production_schedules(machine_id);
+CREATE INDEX IF NOT EXISTS idx_production_schedules_order_id ON public.production_schedules(order_id);
+CREATE INDEX IF NOT EXISTS idx_production_schedules_start_time ON public.production_schedules(start_time);
 
 END;
