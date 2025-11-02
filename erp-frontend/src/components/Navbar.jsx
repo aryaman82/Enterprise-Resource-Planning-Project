@@ -4,7 +4,6 @@ import {
   Home,
   Package,
   ClipboardList,
-  ArrowRightLeft,
   User,
   Users,
   Menu,
@@ -15,7 +14,7 @@ import {
 const navigationItems = [
   { name: "Home", icon: Home, href: "/", active: true },
   { name: "Orders", icon: ClipboardList, href: "/orders", active: false },
-  { name: "Transactions", icon: ArrowRightLeft, href: "/transactions", active: false },
+  { name: "Production", icon: Factory, href: "/production", active: false },
   { name: "Inventory", icon: Package, href: "/inventory", active: false },
   { name: "Employee", icon: Users, href: "/attendance", active: false },
 ];

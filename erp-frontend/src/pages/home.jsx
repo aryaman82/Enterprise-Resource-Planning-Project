@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-    ArrowRightLeft,
+    Factory,
     ClipboardList,
     Package,
     User,
@@ -19,10 +19,10 @@ const navigationCards = [
         iconBg: 'bg-white/20',
     },
     {
-        title: 'Transactions',
-        description: 'View and manage all financial transactions',
-        icon: ArrowRightLeft,
-        href: '/transactions',
+        title: 'Production',
+        description: 'View and manage all production activities',
+        icon: Factory,
+        href: '/production',
         bgColor: 'bg-gradient-to-br from-blue-500 to-blue-600',
         hoverColor: 'hover:from-blue-600 hover:to-blue-700',
         iconBg: 'bg-white/20',

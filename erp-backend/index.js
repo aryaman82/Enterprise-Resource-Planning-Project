@@ -12,6 +12,9 @@ import clientRoutes from "./routes/clientRoutes.js";
 import designRoutes from "./routes/designRoutes.js";
 import cupTypeRoutes from "./routes/cupTypeRoutes.js";
 import migrationRoutes from "./routes/migrationRoutes.js";
+import departmentRoutes from "./routes/departmentRoutes.js";
+import machineRoutes from "./routes/machineRoutes.js";
+import productionScheduleRoutes from "./routes/productionScheduleRoutes.js";
 // Punch sync service (CommonJS modules; import via dynamic require)
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -125,6 +128,14 @@ app.use("/api/cup-types", cupTypeRoutes);
 // Migration routes
 app.use("/api/migrations", migrationRoutes);
 
+// Department routes
+app.use("/api/departments", departmentRoutes);
+
+// Machine routes
+app.use("/api/machines", machineRoutes);
+
+// Production schedule routes
+app.use("/api/production-schedules", productionScheduleRoutes);
 
 // 404 handler for unmatched routes
 app.use((req, res) => {
